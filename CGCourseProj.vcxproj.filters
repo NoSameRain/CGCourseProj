@@ -47,9 +47,6 @@
     <ClInclude Include="ShaderReflection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mathLibNew.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GEMLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>

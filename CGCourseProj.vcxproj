@@ -135,7 +135,6 @@
     <ClInclude Include="Device.h" />
     <ClInclude Include="GamesEngineeringBase.h" />
     <ClInclude Include="GEMLoader.h" />
-    <ClInclude Include="mathLibNew.h" />
     <ClInclude Include="mathLibrary.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="ShaderReflection.h" />
