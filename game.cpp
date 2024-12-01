@@ -8,7 +8,8 @@
 
 
 
-int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow) {
+int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow) 
+{
 	Window win;
 	DXcore core;
 	Shader shader, shader_static;

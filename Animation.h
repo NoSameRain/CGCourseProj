@@ -85,7 +85,7 @@ public:
 	{
 		for (int i = 0; i < skeleton.bones.size(); i++)
 		{
-			//matrices[i] = matrices[i] * skeleton.bones[i].offset  * skeleton.globalInverse;
+			matrices[i] = matrices[i] * skeleton.bones[i].offset *  skeleton.globalInverse;
 
 			matrices[i] = skeleton.bones[i].offset * matrices[i] * skeleton.globalInverse; //old
 
