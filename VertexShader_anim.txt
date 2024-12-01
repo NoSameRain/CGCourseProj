@@ -3,7 +3,6 @@ cbuffer animatedMeshBuffer
 	float4x4 W;
 	float4x4 VP;
 	float4x4 bones[44];
-	bool isAnimated;
 };
 
 struct VS_INPUT
@@ -25,7 +24,6 @@ struct PS_INPUT
 PS_INPUT VS(VS_INPUT input)
 {
 	PS_INPUT output;
-	if(isAnimated){
 	float4x4 transform = bones[input.BoneIDs[0]] * input.BoneWeights[0];
 	transform += bones[input.BoneIDs[1]] * input.BoneWeights[1];
 	transform += bones[input.BoneIDs[2]] * input.BoneWeights[2];
@@ -39,13 +37,6 @@ PS_INPUT VS(VS_INPUT input)
 	output.Tangent = mul(input.Tangent, (float3x3)transform);
 	output.Tangent = mul(output.Tangent, (float3x3)W);
 	output.Tangent = normalize(output.Tangent);
-	}
-	else{
-	output.Pos = mul(input.Pos, W);
-	output.Pos = mul(output.Pos, VP);
-	output.Normal = mul(input.Normal, (float3x3)W);
-	output.Tangent = mul(input.Tangent, (float3x3)W);
-	}
 	output.TexCoords = input.TexCoords;
 	return output;
 }

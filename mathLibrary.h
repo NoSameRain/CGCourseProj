@@ -294,7 +294,300 @@ public:
 };
 
 //-------------------------------Matrix--------------------------------
-class Matrix
+//class Matrix
+//{
+//public:
+//	union
+//	{
+//		float a[4][4];
+//		float m[16];
+//	};
+//	Matrix(float* otherM) {
+//		memcpy(&m, otherM, 16 * sizeof(float));
+//	}
+//	Matrix() {
+//		a[0][0] = 0.f;
+//		a[0][1] = 0.f;
+//		a[0][2] = 0.f;
+//		a[0][3] = 0.f;
+//		a[1][0] = 0.f;
+//		a[1][1] = 0.f;
+//		a[1][2] = 0.f;
+//		a[1][3] = 0.f;
+//		a[2][0] = 0.f;
+//		a[2][1] = 0.f;
+//		a[2][2] = 0.f;
+//		a[2][3] = 0.f;
+//		a[3][0] = 0.f;
+//		a[3][1] = 0.f;
+//		a[3][2] = 0.f;
+//		a[3][3] = 0.f;
+//	}
+//
+//	Matrix(float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33) {
+//		a[0][0] = m00;
+//		a[0][1] = m01;
+//		a[0][2] = m02;
+//		a[0][3] = m03;
+//		a[1][0] = m10;
+//		a[1][1] = m11;
+//		a[1][2] = m12;
+//		a[1][3] = m13;
+//		a[2][0] = m20;
+//		a[2][1] = m21;
+//		a[2][2] = m22;
+//		a[2][3] = m23;
+//		a[3][0] = m30;
+//		a[3][1] = m31;
+//		a[3][2] = m32;
+//		a[3][3] = m33;
+//	}
+//	void identity() {
+//		memset(m, 0, 16 * sizeof(float));
+//		m[0] = 1.0f;
+//		m[5] = 1.0f;
+//		m[10] = 1.0f;
+//		m[15] = 1.0f;
+//	}
+//	float& operator[](int index) {
+//		return m[index];
+//	}
+//	Matrix operator*(const Matrix& matrix)
+//	{
+//		return mul(matrix);
+//	}
+//	//Matrix& operator=(const GEMLoader::GEMMatrix gem) { 
+//	//	m[0] = gem.m[0];
+//	//	m[1] = gem.m[1];
+//	//	m[2] = gem.m[2];
+//	//	m[3] = gem.m[3];
+//	//	m[4] = gem.m[4];
+//	//	m[5] = gem.m[5];
+//	//	m[6] = gem.m[6];
+//	//	m[7] = gem.m[7];
+//	//	m[8] = gem.m[8];
+//	//	m[9] = gem.m[9];
+//	//	m[10] = gem.m[10];
+//	//	m[11] = gem.m[11];
+//	//	m[12] = gem.m[12];
+//	//	m[13] = gem.m[13];
+//	//	m[14] = gem.m[14];
+//	//	m[15] = gem.m[15];
+//	//	
+//	//	 return *this; }
+//
+//	static Matrix worldMatrix(const Vec3& v_t, const Vec3& v_s, float theta_x, float theta_y, float theta_z) {
+//		Matrix translation = translation.translation(v_t);
+//		Matrix scaling = scaling.scaling(v_s);
+//		Matrix rotateX = rotateX.rotateX(theta_x);
+//		Matrix rotateY = rotateY.rotateY(theta_y);
+//		Matrix rotateZ = rotateZ.rotateZ(theta_z);
+//		Matrix rotation = rotateX * rotateY * rotateZ;
+//		return(scaling * rotation * translation);
+//		//return(translation * rotation * scaling);
+//	}
+//
+//	//---------------trans scale rotate----------------------------------------------
+//	static Matrix translation(const Vec3& v) {
+//		Matrix mat;
+//		mat.identity();  // Set up an identity matrix
+//		mat.a[0][3] = v.x;
+//		mat.a[1][3] = v.y;
+//		mat.a[2][3] = v.z;
+//		return mat;
+//	}
+//	static Matrix scaling(const Vec3& v) {
+//		Matrix mat;
+//		mat.identity();  // Set up an identity matrix
+//		mat.m[0] = v.x;
+//		mat.m[5] = v.y;
+//		mat.m[10] = v.z;
+//		return mat;
+//	}
+//	static Matrix rotateX(float theta) {
+//		Matrix mat;
+//		mat.identity();  // Set up an identity matrix
+//
+//		float ct = cosf(theta);
+//		float st = sinf(theta);
+//
+//		// Fill in rotation matrix for X axis
+//		mat.a[1][1] = ct;
+//		mat.a[1][2] = -st;
+//		mat.a[2][1] = st;
+//		mat.a[2][2] = ct;
+//
+//		return mat;
+//	}
+//
+//	static Matrix rotateY(float theta) {
+//		Matrix mat;
+//		mat.identity();  // Set up an identity matrix
+//
+//		float ct = cosf(theta);
+//		float st = sinf(theta);
+//
+//		// Fill in rotation matrix for Y axis
+//		mat.a[0][0] = ct;
+//		mat.a[0][2] = st;
+//		mat.a[2][0] = -st;
+//		mat.a[2][2] = ct;
+//
+//		return mat;
+//	}
+//
+//	static Matrix rotateZ(float theta) {
+//		Matrix mat;
+//		mat.identity();  // Set up an identity matrix
+//
+//		float ct = cosf(theta);
+//		float st = sinf(theta);
+//
+//		// Fill in rotation matrix for Z axis
+//		mat.a[0][0] = ct;
+//		mat.a[0][1] = -st;
+//		mat.a[1][0] = st;
+//		mat.a[1][1] = ct;
+//
+//		return mat;
+//	}
+//	//----------------------------mul---------------------------------------------
+//	Vec3 mulPoint(const Vec3& v)
+//	{
+//		return Vec3(
+//			(v.x * m[0] + v.y * m[1] + v.z * m[2]) + m[3],
+//			(v.x * m[4] + v.y * m[5] + v.z * m[6]) + m[7],
+//			(v.x * m[8] + v.y * m[9] + v.z * m[10]) + m[11]);
+//	}
+//
+//	Vec3 mulVec(const Vec3& v)
+//	{
+//		return Vec3(
+//			(v.x * m[0] + v.y * m[1] + v.z * m[2]),
+//			(v.x * m[4] + v.y * m[5] + v.z * m[6]),
+//			(v.x * m[8] + v.y * m[9] + v.z * m[10]));
+//	}
+//	Vec4 mulVec(const Vec4& v)
+//	{
+//		return Vec4(
+//			(v.x * m[0] + v.y * m[1] + v.z * m[2] + v.w * m[3]),
+//			(v.x * m[4] + v.y * m[5] + v.z * m[6] + v.w * m[7]),
+//			(v.x * m[8] + v.y * m[9] + v.z * m[10] + v.w * m[11]),
+//			(v.x * m[12] + v.y * m[13] + v.z * m[14] + v.w * m[15]));
+//	}
+//	Matrix mul(const Matrix& matrix) const //new
+//	{
+//		Matrix ret;
+//		ret.m[0] = m[0] * matrix.m[0] + m[1] * matrix.m[4] + m[2] * matrix.m[8] + m[3] * matrix.m[12];
+//		ret.m[1] = m[0] * matrix.m[1] + m[1] * matrix.m[5] + m[2] * matrix.m[9] + m[3] * matrix.m[13];
+//		ret.m[2] = m[0] * matrix.m[2] + m[1] * matrix.m[6] + m[2] * matrix.m[10] + m[3] * matrix.m[14];
+//		ret.m[3] = m[0] * matrix.m[3] + m[1] * matrix.m[7] + m[2] * matrix.m[11] + m[3] * matrix.m[15];
+//		ret.m[4] = m[4] * matrix.m[0] + m[5] * matrix.m[4] + m[6] * matrix.m[8] + m[7] * matrix.m[12];
+//		ret.m[5] = m[4] * matrix.m[1] + m[5] * matrix.m[5] + m[6] * matrix.m[9] + m[7] * matrix.m[13];
+//		ret.m[6] = m[4] * matrix.m[2] + m[5] * matrix.m[6] + m[6] * matrix.m[10] + m[7] * matrix.m[14];
+//		ret.m[7] = m[4] * matrix.m[3] + m[5] * matrix.m[7] + m[6] * matrix.m[11] + m[7] * matrix.m[15];
+//		ret.m[8] = m[8] * matrix.m[0] + m[9] * matrix.m[4] + m[10] * matrix.m[8] + m[11] * matrix.m[12];
+//		ret.m[9] = m[8] * matrix.m[1] + m[9] * matrix.m[5] + m[10] * matrix.m[9] + m[11] * matrix.m[13];
+//		ret.m[10] = m[8] * matrix.m[2] + m[9] * matrix.m[6] + m[10] * matrix.m[10] + m[11] * matrix.m[14];
+//		ret.m[11] = m[8] * matrix.m[3] + m[9] * matrix.m[7] + m[10] * matrix.m[11] + m[11] * matrix.m[15];
+//		ret.m[12] = m[12] * matrix.m[0] + m[13] * matrix.m[4] + m[14] * matrix.m[8] + m[15] * matrix.m[12];
+//		ret.m[13] = m[12] * matrix.m[1] + m[13] * matrix.m[5] + m[14] * matrix.m[9] + m[15] * matrix.m[13];
+//		ret.m[14] = m[12] * matrix.m[2] + m[13] * matrix.m[6] + m[14] * matrix.m[10] + m[15] * matrix.m[14];
+//		ret.m[15] = m[12] * matrix.m[3] + m[13] * matrix.m[7] + m[14] * matrix.m[11] + m[15] * matrix.m[15];
+//		return ret;
+//	}
+//
+//
+//	Matrix invert()
+//	{
+//		Matrix inv;
+//		inv[0] = m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] + m[9] * m[7] * m[14] + m[13] * m[6] * m[11] - m[13] * m[7] * m[10];
+//		inv[4] = -m[4] * m[10] * m[15] + m[4] * m[11] * m[14] + m[8] * m[6] * m[15] - m[8] * m[7] * m[14] - m[12] * m[6] * m[11] + m[12] * m[7] * m[10];
+//		inv[8] = m[4] * m[9] * m[15] - m[4] * m[11] * m[13] - m[8] * m[5] * m[15] + m[8] * m[7] * m[13] + m[12] * m[5] * m[11] - m[12] * m[7] * m[9];
+//		inv[12] = -m[4] * m[9] * m[14] + m[4] * m[10] * m[13] + m[8] * m[5] * m[14] - m[8] * m[6] * m[13] - m[12] * m[5] * m[10] + m[12] * m[6] * m[9];
+//		inv[1] = -m[1] * m[10] * m[15] + m[1] * m[11] * m[14] + m[9] * m[2] * m[15] - m[9] * m[3] * m[14] - m[13] * m[2] * m[11] + m[13] * m[3] * m[10];
+//		inv[5] = m[0] * m[10] * m[15] - m[0] * m[11] * m[14] - m[8] * m[2] * m[15] + m[8] * m[3] * m[14] + m[12] * m[2] * m[11] - m[12] * m[3] * m[10];
+//		inv[9] = -m[0] * m[9] * m[15] + m[0] * m[11] * m[13] + m[8] * m[1] * m[15] - m[8] * m[3] * m[13] - m[12] * m[1] * m[11] + m[12] * m[3] * m[9];
+//		inv[13] = m[0] * m[9] * m[14] - m[0] * m[10] * m[13] - m[8] * m[1] * m[14] + m[8] * m[2] * m[13] + m[12] * m[1] * m[10] - m[12] * m[2] * m[9];
+//		inv[2] = m[1] * m[6] * m[15] - m[1] * m[7] * m[14] - m[5] * m[2] * m[15] + m[5] * m[3] * m[14] + m[13] * m[2] * m[7] - m[13] * m[3] * m[6];
+//		inv[6] = -m[0] * m[6] * m[15] + m[0] * m[7] * m[14] + m[4] * m[2] * m[15] - m[4] * m[3] * m[14] - m[12] * m[2] * m[7] + m[12] * m[3] * m[6];
+//		inv[10] = m[0] * m[5] * m[15] - m[0] * m[7] * m[13] - m[4] * m[1] * m[15] + m[4] * m[3] * m[13] + m[12] * m[1] * m[7] - m[12] * m[3] * m[5];
+//		inv[14] = -m[0] * m[5] * m[14] + m[0] * m[6] * m[13] + m[4] * m[1] * m[14] - m[4] * m[2] * m[13] - m[12] * m[1] * m[6] + m[12] * m[2] * m[5];
+//		inv[3] = -m[1] * m[6] * m[11] + m[1] * m[7] * m[10] + m[5] * m[2] * m[11] - m[5] * m[3] * m[10] - m[9] * m[2] * m[7] + m[9] * m[3] * m[6];
+//		inv[7] = m[0] * m[6] * m[11] - m[0] * m[7] * m[10] - m[4] * m[2] * m[11] + m[4] * m[3] * m[10] + m[8] * m[2] * m[7] - m[8] * m[3] * m[6];
+//		inv[11] = -m[0] * m[5] * m[11] + m[0] * m[7] * m[9] + m[4] * m[1] * m[11] - m[4] * m[3] * m[9] - m[8] * m[1] * m[7] + m[8] * m[3] * m[5];
+//		inv[15] = m[0] * m[5] * m[10] - m[0] * m[6] * m[9] - m[4] * m[1] * m[10] + m[4] * m[2] * m[9] + m[8] * m[1] * m[6] - m[8] * m[2] * m[5];
+//		float det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
+//		if (det == 0) {
+//			// Handle this case
+//			throw std::runtime_error("Matrix is singular and cannot be inverted.");
+//		}
+//		det = 1.0 / det;
+//		for (int i = 0; i < 16; i++) {
+//			inv[i] = inv[i] * det;
+//		}
+//		return inv;
+//	}
+//
+//	void perspectiveProjection(float aspect, float tan) {
+//		m[0] = 1 / (aspect * tan);
+//		m[5] = 1 / tan;
+//		m[10] = -_far / (_far - _near);
+//		m[11] = -_far * _near / (_far - _near);
+//		m[14] = -1;
+//		m[15] = 0;
+//
+//		//m[0] = 1 / (aspect * tan);
+//		//m[5] = 1 / tan;
+//		//m[10] = -(_far + _near) / (_far - _near);
+//		//m[11] = -1;
+//		//m[14] = -(2 * _far * _near) / (_far - _near);
+//		//m[15] = 0;
+//	}
+//
+//	Matrix lookAtMat(const Vec3& from, const Vec3& to, const Vec3& up) {
+//		Matrix lookat;
+//		Vec3 dir, right, up_;
+//		dir = to - from;
+//		dir = dir.normalize();
+//		right = cross(up, dir).normalize(); //normalize????????????????
+//		up_ = cross(dir, right).normalize(); //????????????????
+//		// rotation
+//		lookat.m[0] = right.x;
+//		lookat.m[1] = right.y;
+//		lookat.m[2] = right.z;
+//
+//		lookat.m[4] = up_.x;
+//		lookat.m[5] = up_.y;
+//		lookat.m[6] = up_.z;
+//
+//		lookat.m[8] = dir.x;
+//		lookat.m[9] = dir.y;
+//		lookat.m[10] = dir.z;
+//		lookat.m[15] = 1.0f;
+//
+//		// transltion
+//		lookat.m[3] = -from.dot(right);
+//		lookat.m[7] = -from.dot(up_);
+//		lookat.m[11] = -from.dot(dir);
+//		//std::cout << "from " << from.x << " " << from.y << " " << from.z << std::endl;
+//		//std::cout<< "dir " << dir.x << " " << dir.y << " " << dir.z << std::endl;
+//		//std::cout << from.dot(dir) << std::endl;
+//
+//		return lookat;
+//	}
+//	void print() {
+//		for (int i = 0; i < 4; i++) {
+//			for (int j = 0; j < 4; j++) {
+//				std::cout << a[i][j] << " ";
+//			}
+//			std::cout << std::endl;
+//		}
+//
+//	}
+//};
+
+class Matrix // row major
 {
 public:
 	union
@@ -356,25 +649,6 @@ public:
 	{
 		return mul(matrix);
 	}
-	//Matrix& operator=(const GEMLoader::GEMMatrix gem) { 
-	//	m[0] = gem.m[0];
-	//	m[1] = gem.m[1];
-	//	m[2] = gem.m[2];
-	//	m[3] = gem.m[3];
-	//	m[4] = gem.m[4];
-	//	m[5] = gem.m[5];
-	//	m[6] = gem.m[6];
-	//	m[7] = gem.m[7];
-	//	m[8] = gem.m[8];
-	//	m[9] = gem.m[9];
-	//	m[10] = gem.m[10];
-	//	m[11] = gem.m[11];
-	//	m[12] = gem.m[12];
-	//	m[13] = gem.m[13];
-	//	m[14] = gem.m[14];
-	//	m[15] = gem.m[15];
-	//	
-	//	 return *this; }
 
 	static Matrix worldMatrix(const Vec3& v_t, const Vec3& v_s, float theta_x, float theta_y, float theta_z) {
 		Matrix translation = translation.translation(v_t);
@@ -383,8 +657,8 @@ public:
 		Matrix rotateY = rotateY.rotateY(theta_y);
 		Matrix rotateZ = rotateZ.rotateZ(theta_z);
 		Matrix rotation = rotateX * rotateY * rotateZ;
-		//return(scaling * rotation * translation);
-		return(translation * rotation * scaling);
+		return(scaling * rotation * translation);
+		//return (translation* rotation* scaling);
 	}
 
 	//---------------trans scale rotate----------------------------------------------
@@ -478,22 +752,22 @@ public:
 	Matrix mul(const Matrix& matrix) const
 	{
 		Matrix ret;
-		ret.m[0] = m[0] * matrix.m[0] + m[1] * matrix.m[4] + m[2] * matrix.m[8] + m[3] * matrix.m[12];
-		ret.m[1] = m[0] * matrix.m[1] + m[1] * matrix.m[5] + m[2] * matrix.m[9] + m[3] * matrix.m[13];
-		ret.m[2] = m[0] * matrix.m[2] + m[1] * matrix.m[6] + m[2] * matrix.m[10] + m[3] * matrix.m[14];
-		ret.m[3] = m[0] * matrix.m[3] + m[1] * matrix.m[7] + m[2] * matrix.m[11] + m[3] * matrix.m[15];
-		ret.m[4] = m[4] * matrix.m[0] + m[5] * matrix.m[4] + m[6] * matrix.m[8] + m[7] * matrix.m[12];
-		ret.m[5] = m[4] * matrix.m[1] + m[5] * matrix.m[5] + m[6] * matrix.m[9] + m[7] * matrix.m[13];
-		ret.m[6] = m[4] * matrix.m[2] + m[5] * matrix.m[6] + m[6] * matrix.m[10] + m[7] * matrix.m[14];
-		ret.m[7] = m[4] * matrix.m[3] + m[5] * matrix.m[7] + m[6] * matrix.m[11] + m[7] * matrix.m[15];
-		ret.m[8] = m[8] * matrix.m[0] + m[9] * matrix.m[4] + m[10] * matrix.m[8] + m[11] * matrix.m[12];
-		ret.m[9] = m[8] * matrix.m[1] + m[9] * matrix.m[5] + m[10] * matrix.m[9] + m[11] * matrix.m[13];
-		ret.m[10] = m[8] * matrix.m[2] + m[9] * matrix.m[6] + m[10] * matrix.m[10] + m[11] * matrix.m[14];
-		ret.m[11] = m[8] * matrix.m[3] + m[9] * matrix.m[7] + m[10] * matrix.m[11] + m[11] * matrix.m[15];
-		ret.m[12] = m[12] * matrix.m[0] + m[13] * matrix.m[4] + m[14] * matrix.m[8] + m[15] * matrix.m[12];
-		ret.m[13] = m[12] * matrix.m[1] + m[13] * matrix.m[5] + m[14] * matrix.m[9] + m[15] * matrix.m[13];
-		ret.m[14] = m[12] * matrix.m[2] + m[13] * matrix.m[6] + m[14] * matrix.m[10] + m[15] * matrix.m[14];
-		ret.m[15] = m[12] * matrix.m[3] + m[13] * matrix.m[7] + m[14] * matrix.m[11] + m[15] * matrix.m[15];
+		ret.m[0] = m[0] * matrix.m[0] + m[4] * matrix.m[1] + m[8] * matrix.m[2] + m[12] * matrix.m[3];
+		ret.m[1] = m[1] * matrix.m[0] + m[5] * matrix.m[1] + m[9] * matrix.m[2] + m[13] * matrix.m[3];
+		ret.m[2] = m[2] * matrix.m[0] + m[6] * matrix.m[1] + m[10] * matrix.m[2] + m[14] * matrix.m[3];
+		ret.m[3] = m[3] * matrix.m[0] + m[7] * matrix.m[1] + m[11] * matrix.m[2] + m[15] * matrix.m[3];
+		ret.m[4] = m[0] * matrix.m[4] + m[4] * matrix.m[5] + m[8] * matrix.m[6] + m[12] * matrix.m[7];
+		ret.m[5] = m[1] * matrix.m[4] + m[5] * matrix.m[5] + m[9] * matrix.m[6] + m[13] * matrix.m[7];
+		ret.m[6] = m[2] * matrix.m[4] + m[6] * matrix.m[5] + m[10] * matrix.m[6] + m[14] * matrix.m[7];
+		ret.m[7] = m[3] * matrix.m[4] + m[7] * matrix.m[5] + m[11] * matrix.m[6] + m[15] * matrix.m[7];
+		ret.m[8] = m[0] * matrix.m[8] + m[4] * matrix.m[9] + m[8] * matrix.m[10] + m[12] * matrix.m[11];
+		ret.m[9] = m[1] * matrix.m[8] + m[5] * matrix.m[9] + m[9] * matrix.m[10] + m[13] * matrix.m[11];
+		ret.m[10] = m[2] * matrix.m[8] + m[6] * matrix.m[9] + m[10] * matrix.m[10] + m[14] * matrix.m[11];
+		ret.m[11] = m[3] * matrix.m[8] + m[7] * matrix.m[9] + m[11] * matrix.m[10] + m[15] * matrix.m[11];
+		ret.m[12] = m[0] * matrix.m[12] + m[4] * matrix.m[13] + m[8] * matrix.m[14] + m[12] * matrix.m[15];
+		ret.m[13] = m[1] * matrix.m[12] + m[5] * matrix.m[13] + m[9] * matrix.m[14] + m[13] * matrix.m[15];
+		ret.m[14] = m[2] * matrix.m[12] + m[6] * matrix.m[13] + m[10] * matrix.m[14] + m[14] * matrix.m[15];
+		ret.m[15] = m[3] * matrix.m[12] + m[7] * matrix.m[13] + m[11] * matrix.m[14] + m[15] * matrix.m[15];
 		return ret;
 	}
 
@@ -535,19 +809,12 @@ public:
 		m[11] = -_far * _near / (_far - _near);
 		m[14] = -1;
 		m[15] = 0;
-
-		//m[0] = 1 / (aspect * tan);
-		//m[5] = 1 / tan;
-		//m[10] = -(_far + _near) / (_far - _near);
-		//m[11] = -1;
-		//m[14] = -(2 * _far * _near) / (_far - _near);
-		//m[15] = 0;
 	}
 
 	Matrix lookAtMat(const Vec3& from, const Vec3& to, const Vec3& up) {
 		Matrix lookat;
 		Vec3 dir, right, up_;
-		dir = to - from;
+		dir = from - to;
 		dir = dir.normalize();
 		right = cross(up, dir).normalize(); //normalize????????????????
 		up_ = cross(dir, right).normalize(); //????????????????
@@ -575,16 +842,10 @@ public:
 
 		return lookat;
 	}
-	void print() {
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				std::cout << a[i][j] << " ";
-			}
-			std::cout << std::endl;
-		}
 
-	}
 };
+
+
 
 class Spherical {
 	//float theta;
