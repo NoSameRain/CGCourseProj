@@ -816,8 +816,8 @@ public:
 		Vec3 dir, right, up_;
 		dir = from - to;
 		dir = dir.normalize();
-		right = cross(up, dir); //normalize????????????????
-		up_ = cross(dir, right); //????????????????
+		right = cross(up, dir).normalize(); //normalize????????????????
+		up_ = cross(dir, right).normalize(); //????????????????
 		// rotation
 		lookat.m[0] = right.x;
 		lookat.m[1] = right.y;
@@ -827,15 +827,15 @@ public:
 		lookat.m[5] = up_.y;
 		lookat.m[6] = up_.z;
 
-		lookat.m[8] = -dir.x;
-		lookat.m[9] = -dir.y;
-		lookat.m[10] = -dir.z;
+		lookat.m[8] = dir.x;
+		lookat.m[9] = dir.y;
+		lookat.m[10] = dir.z;
 		lookat.m[15] = 1.0f;
 
 		// transltion
 		lookat.m[3] = -from.dot(right);
 		lookat.m[7] = -from.dot(up_);
-		lookat.m[11] = from.dot(dir);
+		lookat.m[11] = -from.dot(dir);
 		//std::cout << "from " << from.x << " " << from.y << " " << from.z << std::endl;
 		//std::cout<< "dir " << dir.x << " " << dir.y << " " << dir.z << std::endl;
 		//std::cout << from.dot(dir) << std::endl;
@@ -871,7 +871,7 @@ public:
 	union {
 		struct {
 			//q=a+bi+cj+dk
-			float a,b,c,d;
+			float a, b, c, d;
 		};
 		float q[4];
 	};
@@ -900,7 +900,7 @@ public:
 		Quaternion q2Modified = (cosTheta < 0) ? Quaternion(-q2.a, -q2.b, -q2.c, -q2.d) : q2;
 		cosTheta = fabs(cosTheta);
 
-		 //Use linear interpolation for very small angles
+		//Use linear interpolation for very small angles
 		if (cosTheta > 0.95f) {
 			return Quaternion(
 				(1 - t) * q1.a + t * q2Modified.a,
