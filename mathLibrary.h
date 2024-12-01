@@ -2,6 +2,7 @@
 #define _USE_MATH_DEFINES
 #include<cmath>
 #include<iostream>
+//#include "GEMLoader.h"
 #include "memory.h"
 #define SQ(x) (x) * (x)
 #define max(a,b)(a>b?a:b)
@@ -355,6 +356,25 @@ public:
 	{
 		return mul(matrix);
 	}
+	//Matrix& operator=(const GEMLoader::GEMMatrix gem) { 
+	//	m[0] = gem.m[0];
+	//	m[1] = gem.m[1];
+	//	m[2] = gem.m[2];
+	//	m[3] = gem.m[3];
+	//	m[4] = gem.m[4];
+	//	m[5] = gem.m[5];
+	//	m[6] = gem.m[6];
+	//	m[7] = gem.m[7];
+	//	m[8] = gem.m[8];
+	//	m[9] = gem.m[9];
+	//	m[10] = gem.m[10];
+	//	m[11] = gem.m[11];
+	//	m[12] = gem.m[12];
+	//	m[13] = gem.m[13];
+	//	m[14] = gem.m[14];
+	//	m[15] = gem.m[15];
+	//	
+	//	 return *this; }
 
 	static Matrix worldMatrix(const Vec3& v_t, const Vec3& v_s, float theta_x, float theta_y, float theta_z) {
 		Matrix translation = translation.translation(v_t);
@@ -363,7 +383,8 @@ public:
 		Matrix rotateY = rotateY.rotateY(theta_y);
 		Matrix rotateZ = rotateZ.rotateZ(theta_z);
 		Matrix rotation = rotateX * rotateY * rotateZ;
-		return(scaling * rotation * translation);
+		//return(scaling * rotation * translation);
+		return(translation * rotation * scaling);
 	}
 
 	//---------------trans scale rotate----------------------------------------------
@@ -457,22 +478,22 @@ public:
 	Matrix mul(const Matrix& matrix) const
 	{
 		Matrix ret;
-		ret.m[0] = m[0] * matrix.m[0] + m[4] * matrix.m[1] + m[8] * matrix.m[2] + m[12] * matrix.m[3];
-		ret.m[1] = m[1] * matrix.m[0] + m[5] * matrix.m[1] + m[9] * matrix.m[2] + m[13] * matrix.m[3];
-		ret.m[2] = m[2] * matrix.m[0] + m[6] * matrix.m[1] + m[10] * matrix.m[2] + m[14] * matrix.m[3];
-		ret.m[3] = m[3] * matrix.m[0] + m[7] * matrix.m[1] + m[11] * matrix.m[2] + m[15] * matrix.m[3];
-		ret.m[4] = m[0] * matrix.m[4] + m[4] * matrix.m[5] + m[8] * matrix.m[6] + m[12] * matrix.m[7];
-		ret.m[5] = m[1] * matrix.m[4] + m[5] * matrix.m[5] + m[9] * matrix.m[6] + m[13] * matrix.m[7];
-		ret.m[6] = m[2] * matrix.m[4] + m[6] * matrix.m[5] + m[10] * matrix.m[6] + m[14] * matrix.m[7];
-		ret.m[7] = m[3] * matrix.m[4] + m[7] * matrix.m[5] + m[11] * matrix.m[6] + m[15] * matrix.m[7];
-		ret.m[8] = m[0] * matrix.m[8] + m[4] * matrix.m[9] + m[8] * matrix.m[10] + m[12] * matrix.m[11];
-		ret.m[9] = m[1] * matrix.m[8] + m[5] * matrix.m[9] + m[9] * matrix.m[10] + m[13] * matrix.m[11];
-		ret.m[10] = m[2] * matrix.m[8] + m[6] * matrix.m[9] + m[10] * matrix.m[10] + m[14] * matrix.m[11];
-		ret.m[11] = m[3] * matrix.m[8] + m[7] * matrix.m[9] + m[11] * matrix.m[10] + m[15] * matrix.m[11];
-		ret.m[12] = m[0] * matrix.m[12] + m[4] * matrix.m[13] + m[8] * matrix.m[14] + m[12] * matrix.m[15];
-		ret.m[13] = m[1] * matrix.m[12] + m[5] * matrix.m[13] + m[9] * matrix.m[14] + m[13] * matrix.m[15];
-		ret.m[14] = m[2] * matrix.m[12] + m[6] * matrix.m[13] + m[10] * matrix.m[14] + m[14] * matrix.m[15];
-		ret.m[15] = m[3] * matrix.m[12] + m[7] * matrix.m[13] + m[11] * matrix.m[14] + m[15] * matrix.m[15];
+		ret.m[0] = m[0] * matrix.m[0] + m[1] * matrix.m[4] + m[2] * matrix.m[8] + m[3] * matrix.m[12];
+		ret.m[1] = m[0] * matrix.m[1] + m[1] * matrix.m[5] + m[2] * matrix.m[9] + m[3] * matrix.m[13];
+		ret.m[2] = m[0] * matrix.m[2] + m[1] * matrix.m[6] + m[2] * matrix.m[10] + m[3] * matrix.m[14];
+		ret.m[3] = m[0] * matrix.m[3] + m[1] * matrix.m[7] + m[2] * matrix.m[11] + m[3] * matrix.m[15];
+		ret.m[4] = m[4] * matrix.m[0] + m[5] * matrix.m[4] + m[6] * matrix.m[8] + m[7] * matrix.m[12];
+		ret.m[5] = m[4] * matrix.m[1] + m[5] * matrix.m[5] + m[6] * matrix.m[9] + m[7] * matrix.m[13];
+		ret.m[6] = m[4] * matrix.m[2] + m[5] * matrix.m[6] + m[6] * matrix.m[10] + m[7] * matrix.m[14];
+		ret.m[7] = m[4] * matrix.m[3] + m[5] * matrix.m[7] + m[6] * matrix.m[11] + m[7] * matrix.m[15];
+		ret.m[8] = m[8] * matrix.m[0] + m[9] * matrix.m[4] + m[10] * matrix.m[8] + m[11] * matrix.m[12];
+		ret.m[9] = m[8] * matrix.m[1] + m[9] * matrix.m[5] + m[10] * matrix.m[9] + m[11] * matrix.m[13];
+		ret.m[10] = m[8] * matrix.m[2] + m[9] * matrix.m[6] + m[10] * matrix.m[10] + m[11] * matrix.m[14];
+		ret.m[11] = m[8] * matrix.m[3] + m[9] * matrix.m[7] + m[10] * matrix.m[11] + m[11] * matrix.m[15];
+		ret.m[12] = m[12] * matrix.m[0] + m[13] * matrix.m[4] + m[14] * matrix.m[8] + m[15] * matrix.m[12];
+		ret.m[13] = m[12] * matrix.m[1] + m[13] * matrix.m[5] + m[14] * matrix.m[9] + m[15] * matrix.m[13];
+		ret.m[14] = m[12] * matrix.m[2] + m[13] * matrix.m[6] + m[14] * matrix.m[10] + m[15] * matrix.m[14];
+		ret.m[15] = m[12] * matrix.m[3] + m[13] * matrix.m[7] + m[14] * matrix.m[11] + m[15] * matrix.m[15];
 		return ret;
 	}
 
@@ -514,12 +535,19 @@ public:
 		m[11] = -_far * _near / (_far - _near);
 		m[14] = -1;
 		m[15] = 0;
+
+		//m[0] = 1 / (aspect * tan);
+		//m[5] = 1 / tan;
+		//m[10] = -(_far + _near) / (_far - _near);
+		//m[11] = -1;
+		//m[14] = -(2 * _far * _near) / (_far - _near);
+		//m[15] = 0;
 	}
 
 	Matrix lookAtMat(const Vec3& from, const Vec3& to, const Vec3& up) {
 		Matrix lookat;
 		Vec3 dir, right, up_;
-		dir = from - to;
+		dir = to - from;
 		dir = dir.normalize();
 		right = cross(up, dir).normalize(); //normalize????????????????
 		up_ = cross(dir, right).normalize(); //????????????????
@@ -581,39 +609,21 @@ class Quaternion {
 public:
 	union {
 		struct {
-			// q=a+bi+cj+dk
-			float a;
-			float b;
-			float c;
-			float d;
+			//q=a+bi+cj+dk
+			float a,b,c,d;
 		};
 		float q[4];
 	};
-	// Constructor
+	//constructor
 	Quaternion(float _a, float _b, float _c, float _d) : a(_a), b(_b), c(_c), d(_d) {}
+	Quaternion() : a(1.0f), b(0.0f), c(0.0f), d(0.0f) {}
 
-	// Magnitude of the quaternion
+	//magnitude of the quaternion
 	float magnitude() const {
 		return sqrt(SQ(a) + SQ(b) + SQ(c) + SQ(d));
 	}
 
-	// Normalize the quaternion
-	void normalize() {
-		float mag = magnitude();
-		if (mag > 0) {
-			a /= mag;
-			b /= mag;
-			c /= mag;
-			d /= mag;
-		}
-	}
-
-	// Conjugate of the quaternion
-	Quaternion conjugate() const {
-		return Quaternion(a, -b, -c, -d);
-	}
-
-	// Inverse of the quaternion (only valid for unit quaternions)
+	//inverse of the quaternion (only valid for unit quaternions)
 	Quaternion inverse() const {
 		float mag = magnitude();
 		// mag == 1?
@@ -629,15 +639,15 @@ public:
 		Quaternion q2Modified = (cosTheta < 0) ? Quaternion(-q2.a, -q2.b, -q2.c, -q2.d) : q2;
 		cosTheta = fabs(cosTheta);
 
-		//// Linear interpolation for small angles
-		//if (cosTheta > 0.95f) {
-		//	return Quaternion(
-		//		(1 - t) * q1.w + t * q2Modified.w,
-		//		(1 - t) * q1.x + t * q2Modified.x,
-		//		(1 - t) * q1.y + t * q2Modified.y,
-		//		(1 - t) * q1.z + t * q2Modified.z
-		//	).normalized();
-		//}
+		 //Use linear interpolation for very small angles
+		if (cosTheta > 0.95f) {
+			return Quaternion(
+				(1 - t) * q1.a + t * q2Modified.a,
+				(1 - t) * q1.b + t * q2Modified.b,
+				(1 - t) * q1.c + t * q2Modified.c,
+				(1 - t) * q1.d + t * q2Modified.d
+			).normalized();
+		}
 
 		// Compute the angle and sin values
 		float angle = acos(cosTheta);
@@ -652,29 +662,44 @@ public:
 			w1 * q1.b + w2 * q2Modified.b,
 			w1 * q1.c + w2 * q2Modified.c,
 			w1 * q1.d + w2 * q2Modified.d
-		);
+		).normalized();
+	}
+
+	Quaternion normalized() const {
+		float mag = magnitude();
+		if (mag > 0) {
+			return Quaternion(a / mag, b / mag, c / mag, d / mag);
+		}
+		// If magnitude is zero, return an identity quaternion (default is often (1, 0, 0, 0))
+		return Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
 	}
 
 	// Convert quaternion to a rotation matrix (3x3)
-	void toMatrix(float matrix[3][3]) const {
-		matrix[0][0] = 1 - 2 * b * b - 2 * d * d;
-		matrix[0][1] = 2 * b * c - 2 * d * a;
-		matrix[0][2] = 2 * b * d + 2 * c * a;
+	Matrix toMatrix() const {
+		Matrix matrix;
+		matrix.a[0][0] = 1 - 2 * b * b - 2 * d * d;
+		matrix.a[0][1] = 2 * b * c - 2 * d * a;
+		matrix.a[0][2] = 2 * b * d + 2 * c * a;
 
-		matrix[1][0] = 2 * b * c + 2 * d * a;
-		matrix[1][1] = 1 - 2 * b * b - 2 * d * d;
-		matrix[1][2] = 2 * c * d - 2 * b * a;
+		matrix.a[1][0] = 2 * b * c + 2 * d * a;
+		matrix.a[1][1] = 1 - 2 * b * b - 2 * d * d;
+		matrix.a[1][2] = 2 * c * d - 2 * b * a;
 
-		matrix[2][0] = 2 * b * d - 2 * c * a;
-		matrix[2][1] = 2 * c * d + 2 * b * a;
-		matrix[2][2] = 1 - 2 * b * b - 2 * c * c;
+		matrix.a[2][0] = 2 * b * d - 2 * c * a;
+		matrix.a[2][1] = 2 * c * d + 2 * b * a;
+		matrix.a[2][2] = 1 - 2 * b * b - 2 * c * c;
+
+		//extend to 4* 4
+		matrix.a[0][3] = 0.0f;
+		matrix.a[1][3] = 0.0f;
+		matrix.a[2][3] = 0.0f;
+		matrix.a[3][0] = 0.0f;
+		matrix.a[3][1] = 0.0f;
+		matrix.a[3][2] = 0.0f;
+		matrix.a[3][3] = 1.0f;
+
+		return matrix;
 	}
-
-	// Helper function for normalization
-	//Quaternion normalized() const {
-	//	float mag = magnitude();
-	//	return (mag > 0) ? Quaternion(w / mag, x / mag, y / mag, z / mag) : Quaternion(1, 0, 0, 0);
-	//}
 };
 
 class Colour {
@@ -712,12 +737,7 @@ public:
 	}
 
 	Colour operator/(float scalar) const {
-		if (scalar != 0) {
-			return Colour(r / scalar, g / scalar, b / scalar);
-		}
-		else {
-			throw std::runtime_error("Division by zero error in Colour class.");
-		}
+		return Colour(r / scalar, g / scalar, b / scalar);
 	}
 
 	// Helper function to clamp the value between 0.0 and 1.0
@@ -768,89 +788,4 @@ public:
 };
 
 
-//template<typename t>
-//t perspectiveCorrectInterpolateAttribute(t a0, t a1, t a2, float v0_w, float v1_w, float v2_w, float alpha, float beta, float gamma, float frag_w)
-//{
-//	t attrib[3];
-//	attrib[0] = a0 * v0_w * alpha;
-//	attrib[1] = a1 * v1_w * beta;
-//	attrib[2] = a2 * v2_w * gamma;
-//	return ((attrib[0] + attrib[1] + attrib[2]) / frag_w);
-//}
-
-
-class Triangle_ {
-public:
-	Vec2 v0, v1, v2;
-	Vec2 e0, e1, e2;
-	Vec3 n0, n1, n2;
-	Colour colour_v0, colour_v1, colour_v2;
-	float A; // area of the triangle (1/2 canceled)
-	float c0, c1, c2;
-	float w0_clip, w1_clip, w2_clip;
-	float z0_clip, z1_clip, z2_clip;
-	float alpha, beta, gamma;
-	float alpha_correct, beta_correct, gamma_correct;
-
-	Triangle_(Vec2 _v0, Vec2 _v1, Vec2 _v2, Vec3 _n0, Vec3 _n1, Vec3 _n2, float w0, float w1, float w2, float z0, float z1, float z2) : colour_v0(255.f, 0, 0), colour_v1(0, 255.f, 0), colour_v2(0, 0, 255.f),
-		v0(_v0), v1(_v1), v2(_v2), n0(_n0), n1(_n1), n2(_n2), w0_clip(w0), w1_clip(w1), w2_clip(w2), z0_clip(z0), z1_clip(z1), z2_clip(z2) {
-		e0 = v1 - v0;
-		e1 = v2 - v1;
-		e2 = v0 - v2;
-		A = abs(cross(e0, e1));
-	}
-	void print() {
-		std::cout << "v0 " << v0.x << " " << v0.y << " v1 " << v1.x << " " << v1.y << " v2 " << v2.x << " " << v2.y << std::endl;
-	}
-	//Backface culling
-	bool isBackFace() {
-		Vec2 edge1 = v1 - v0;
-		Vec2 edge2 = v2 - v0;
-		// Counterclockwise: Cull if cross < 0, else ?
-		return cross_lefttop(edge1, edge2) > 0;
-	}
-
-	//Rasterize
-	bool Edge(Vec2 p) {
-		Vec2 q0 = p - v0;
-		Vec2 q1 = p - v1;
-		Vec2 q2 = p - v2;
-
-		c0 = cross_lefttop(q0, e0);
-		c1 = cross_lefttop(q1, e1);
-		c2 = cross_lefttop(q2, e2);
-
-		alpha = c1 / A;
-		beta = c2 / A;
-		gamma = c0 / A;
-
-		const float EPSILON = 1e-5; // A small tolerance value
-
-		if (alpha >= 0 && beta >= 0 && gamma >= 0 && abs(alpha + beta + gamma - 1.0f) <= EPSILON) {
-			return true;
-		}
-		return false;
-	}
-
-	void computePerspectiveCorrectBarycentric() {
-		float frag_w = alpha * w1_clip + beta * w2_clip + gamma * w0_clip;
-		alpha_correct = (alpha * w1_clip) / frag_w;
-		beta_correct = (beta * w2_clip) / frag_w;
-		gamma_correct = (gamma * w0_clip) / frag_w;
-	}
-
-	Vec3 interpolateNormal() {
-		return ((n0 * gamma_correct + n2 * beta_correct + n1 * alpha_correct).normalize());
-	}
-
-	Colour getColor() {
-		return (colour_v0 * gamma_correct + colour_v2 * beta_correct + colour_v1 * alpha_correct);
-	}
-
-	float getInterpolatedZ() {
-		//std::cout << "z0 " << z0_clip << " " << "z1 " << z1_clip << " " << "z2 " << z2_clip << std::endl;
-		//std::cout << "z_inter " << z0_clip * gamma_correct + z2_clip * beta_correct + z1_clip * alpha_correct << std::endl;
-		return (z0_clip * gamma_correct + z2_clip * beta_correct + z1_clip * alpha_correct);
-	}
-};
 

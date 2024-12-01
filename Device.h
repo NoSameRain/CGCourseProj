@@ -104,7 +104,6 @@ public:
 
 		devicecontext->RSSetState(rasterizerState); //!!!!
 
-		//11.24 constant buffer
 	}
 	void clear() {
 		float ClearColour[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
