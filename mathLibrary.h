@@ -9,6 +9,7 @@
 #define max_tri(a, b, c) ((a > b ? a : b) > c ? (a > b ? a : b) : c)
 #define min(a,b)(a<b?a:b)
 #define min_tri(a, b, c) ((a < b ? a : b) < c ? (a < b ? a : b) : c)
+#define M_PI       3.14159265358979323846
 
 const float _near = 0.1;
 const float _far = 100;
@@ -23,11 +24,6 @@ template <typename T>
 T clamp(T value, T min, T max) {
 	return (value < min) ? min : (value > max) ? max : value;
 }
-
-//float Dot(const Vec3& v1, const Vec3& v2)
-//{
-//	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
-//}
 
 //-------------------------------Vec2--------------------------------
 class Vec2
@@ -242,55 +238,7 @@ public:
 		float len = 1.0f / sqrtf(v[0] * v[0] + v[1] * v[1] + v[2] * v[2] + v[3] * v[3]);
 		return Vec4(x * len, y * len, z * len, w * len);
 	}
-	//======================================
-	//float normalize_GetLength()
-	//{
-	//	float length = sqrtf(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-	//	float len = 1.0f / length;
-	//	v[0] *= len; v[1] *= len; v[2] *= len;
-	//	return length;
-	//}
-	//float Dot(const Vec3& pVec) const
-	//{
-	//	return v[0] * pVec.v[0] + v[1] * pVec.v[1] + v[2] * pVec.v[2];
-	//}
-	//Vec3 Cross(const Vec3& v1)
-	//{
-	//	return Vec3(v1.v[1] * v[2] - v1.v[2] * v[1],
-	//		v1.v[2] * v[0] - v1.v[0] * v[2],
-	//		v1.v[0] * v[1] - v1.v[1] * v[0]);
-	//}
 
-};
-
-//-------------------------------HomoVec--------------------------------
-class HomoVec : public Vec4 {
-public:
-	HomoVec(float _x, float _y, float _z, float _w) {
-		v[0] = _x;
-		v[1] = _y;
-		v[2] = _z;
-		v[3] = _w;
-	}
-	HomoVec(Vec4 _v) {
-		v[0] = _v.x;
-		v[1] = _v.y;
-		v[2] = _v.z;
-		v[3] = _v.w;
-	}
-	void divisionW() {
-		if (w != 0) {
-			x /= w; //x_ndc
-			y /= w; //y_ndc
-			z /= w; //z_ndc
-			w = 1.0f;
-			//std::cout << "After division w:" << "x = " << x << "y = " << y << "z = " <<z<< std::endl;
-		}
-		else {
-			throw std::runtime_error("Division by zero: w cannot be zero.");
-		}
-	}
-	HomoVec& operator=(const Vec4 v) { x = v.x, y = v.y, z = v.z, w = v.w; return *this; }
 };
 
 //-------------------------------Matrix--------------------------------
@@ -845,8 +793,6 @@ public:
 
 };
 
-
-
 class Spherical {
 	//float theta;
 	//float phi;
@@ -877,6 +823,7 @@ public:
 	};
 	//constructor
 	Quaternion(float _a, float _b, float _c, float _d) : a(_a), b(_b), c(_c), d(_d) {}
+	//no rotation - identify
 	Quaternion() : a(1.0f), b(0.0f), c(0.0f), d(0.0f) {}
 
 	//magnitude of the quaternion
@@ -887,43 +834,9 @@ public:
 	//inverse of the quaternion (only valid for unit quaternions)
 	Quaternion inverse() const {
 		float mag = magnitude();
-		// mag == 1?
-		return Quaternion(a / mag, -b / mag, -c / mag, -d / mag);
-	}
-
-	// Slerp (Spherical Linear Interpolation)
-	static Quaternion slerp(const Quaternion& q1, const Quaternion& q2, float t) {
-		// Compute the cosine of the angle between the two quaternions
-		float cosTheta = q1.a * q2.a + q1.b * q2.b + q1.c * q2.c + q1.d * q2.d;
-
-		// If cosTheta is negative, invert one quaternion to reduce spinning
-		Quaternion q2Modified = (cosTheta < 0) ? Quaternion(-q2.a, -q2.b, -q2.c, -q2.d) : q2;
-		cosTheta = fabs(cosTheta);
-
-		//Use linear interpolation for very small angles
-		if (cosTheta > 0.95f) {
-			return Quaternion(
-				(1 - t) * q1.a + t * q2Modified.a,
-				(1 - t) * q1.b + t * q2Modified.b,
-				(1 - t) * q1.c + t * q2Modified.c,
-				(1 - t) * q1.d + t * q2Modified.d
-			).normalized();
+		if (mag > 0) {
+			return Quaternion(a / mag, -b / mag, -c / mag, -d / mag);
 		}
-
-		// Compute the angle and sin values
-		float angle = acos(cosTheta);
-		float sinTheta = sqrt(1.0f - SQ(cosTheta));
-
-		// Compute the weights
-		float w1 = sin((1 - t) * angle) / sinTheta;
-		float w2 = sin(t * angle) / sinTheta;
-
-		return Quaternion(
-			w1 * q1.a + w2 * q2Modified.a,
-			w1 * q1.b + w2 * q2Modified.b,
-			w1 * q1.c + w2 * q2Modified.c,
-			w1 * q1.d + w2 * q2Modified.d
-		).normalized();
 	}
 
 	Quaternion normalized() const {
@@ -931,9 +844,41 @@ public:
 		if (mag > 0) {
 			return Quaternion(a / mag, b / mag, c / mag, d / mag);
 		}
-		// If magnitude is zero, return an identity quaternion (default is often (1, 0, 0, 0))
 		return Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
 	}
+
+	// Slerp (Spherical Linear Interpolation)
+	static Quaternion slerp(const Quaternion& q1, const Quaternion& q2, float t) {
+		float cos;
+		Quaternion q1_ = Quaternion(q1.a, q1.b, q1.c, q1.d);
+
+		cos = q1.a * q2.a + q1.b * q2.b + q1.c * q2.c + q1.d * q2.d;
+		if (cos < 0) {
+			Quaternion q1_ = Quaternion(-q1.a, -q1.b, -q1.c, -q1.d);
+			cos = fabs(cos);
+		}
+
+		if (cos > 0.95) {
+			return Quaternion(
+				(1 - t) * q1_.a + t * q2.a,
+				(1 - t) * q1_.b + t * q2.b,
+				(1 - t) * q1_.c + t * q2.c,
+				(1 - t) * q1_.d + t * q2.d
+			).normalized();
+		}
+
+		float theta = acos(cos);
+		float sinTheta = sinf(theta);
+		// sin((1-t)theta) * q1_ / sin theta  +  sin(t*theta) * q2 / sin(theta)
+		float a_ = sinf((1 - t) * theta) * q1_.a / sinTheta + sinf(t * theta) * q2.a / sinTheta;
+		float b_ = sinf((1 - t) * theta) * q1_.b / sinTheta + sinf(t * theta) * q2.b / sinTheta;
+		float c_ = sinf((1 - t) * theta) * q1_.c / sinTheta + sinf(t * theta) * q2.c / sinTheta;
+		float d_ = sinf((1 - t) * theta) * q1_.d / sinTheta + sinf(t * theta) * q2.d / sinTheta;
+
+		return Quaternion(a_,b_,c_,d_).normalized();
+	}
+
+	
 
 	// Convert quaternion to a rotation matrix (3x3)
 	Matrix toMatrix() const {
