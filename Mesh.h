@@ -4,6 +4,7 @@
 #include "mathLibrary.h"
 #include "GEMLoader.h"
 #include "Animation.h"
+#include "Texture.h"
 #include <windows.h>
 
 struct STATIC_VERTEX
@@ -77,11 +78,17 @@ public:
 class Model_static {
 public:	
 	std::vector<Mesh> meshes;
+	std::vector<std::string> textureFilenames;
+	Shader shader;
+	
 
 	void init(std::string filename, DXcore* core) {
 		GEMLoader::GEMModelLoader loader;
 		std::vector<GEMLoader::GEMMesh> gemmeshes;
 		loader.load(filename, gemmeshes);
+		//texture
+		
+
 		for (int i = 0; i < gemmeshes.size(); i++) {
 			Mesh mesh;
 			std::vector<STATIC_VERTEX> vertices;
@@ -90,14 +97,20 @@ public:
 				memcpy(&v, &gemmeshes[i].verticesStatic[j], sizeof(STATIC_VERTEX));
 				vertices.push_back(v);
 			}
+			textureFilenames.push_back(gemmeshes[i].material.find("diffuse").getValue());
+			// Load texture with filename: gemmeshes[i].material.find("diffuse").getValue()
 			mesh.init_static(core, vertices, gemmeshes[i].indices);
+
 			meshes.push_back(mesh);
 		}
+		
+
 	}
 
-	void draw(DXcore* core) {
+	void draw(DXcore* core, TextureManager textures, Shader* shader) {////////////////
 		for (int i = 0; i < meshes.size(); i++)
 		{
+			shader->updateTexturePS(core, "tex", textures.find(textureFilenames[i]));
 			meshes[i].draw(core);
 		}
 	}
@@ -108,6 +121,9 @@ class Model_animated {
 public:
 	std::vector<Mesh> meshes;
 	Animation animation;
+	std::vector<std::string> textureFilenames;
+	Shader shader;
+	TextureManager textures;
 
 	void init(std::string filename, DXcore* core) {
 		GEMLoader::GEMModelLoader loader;
@@ -124,6 +140,9 @@ public:
 				memcpy(&v, &gemmeshes[i].verticesAnimated[j], sizeof(ANIMATED_VERTEX));
 				vertices.push_back(v);
 			}
+			//path
+			textureFilenames.push_back(gemmeshes[i].material.find("diffuse").getValue());
+			// Load texture with filename: gemmeshes[i].material.find("diffuse").getValue()
 			mesh.init_animated(core, vertices, gemmeshes[i].indices);
 			meshes.push_back(mesh);
 		}
@@ -171,6 +190,7 @@ public:
 	void draw(DXcore* core) {
 		for (int i = 0; i < meshes.size(); i++)
 		{
+			//shader.updateTexturePS(core, "tex", textures.find(textureFilenames[i]));
 			meshes[i].draw(core);
 		}
 	}

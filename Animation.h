@@ -54,12 +54,14 @@ public:
 	{
 		Matrix scale = Matrix::scaling(interpolate(frames[baseFrame].scales[boneIndex], frames[nextFrame(baseFrame)].scales[boneIndex], interpolationFact));
 		// normalize?
-		Matrix rotation = interpolate(frames[baseFrame].rotations[boneIndex].normalized(), frames[nextFrame(baseFrame)].rotations[boneIndex].normalized(), interpolationFact).toMatrix();
+		Matrix rotation = interpolate(frames[baseFrame].rotations[boneIndex], frames[nextFrame(baseFrame)].rotations[boneIndex], interpolationFact).toMatrix();
 		Matrix translation = Matrix::translation(interpolate(frames[baseFrame].positions[boneIndex], frames[nextFrame(baseFrame)].positions[boneIndex], interpolationFact));
-		//Matrix local = translation * rotation * scale;
+		//Matrix local;
+		//local.identity();
 		Matrix local = scale * rotation * translation; //old
 		if (skeleton->bones[boneIndex].parentIndex > -1)
 		{
+			// Global Matrix=Parent Bone Matrix×Local Matrix
 			//Matrix global = matrices[skeleton->bones[boneIndex].parentIndex] * local;
 			Matrix global = local * matrices[skeleton->bones[boneIndex].parentIndex]; //old
 			return global;
@@ -85,14 +87,13 @@ public:
 	{
 		for (int i = 0; i < skeleton.bones.size(); i++)
 		{
-			//matrices[i] = matrices[i] * skeleton.bones[i].offset *  skeleton.globalInverse;
+			// Final Matrix=Global Matrix×Inverse Bind Pose×Global Inverse
+			//matrices[i] = matrices[i] *skeleton.bones[i].offset* skeleton.globalInverse;
 
 			matrices[i] = skeleton.bones[i].offset * matrices[i] * skeleton.globalInverse; //old
 
 		}
 	}
-
-
 };
 
 class AnimationInstance
@@ -101,7 +102,7 @@ public:
 	Animation* animation;
 	std::string currentAnimation;
 	float t;
-	Matrix matrices[44];
+	Matrix matrices[256];
 	void resetAnimationTime()
 	{
 		t = 0;

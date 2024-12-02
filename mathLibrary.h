@@ -628,12 +628,11 @@ public:
 	}
 	static Matrix rotateX(float theta) {
 		Matrix mat;
-		mat.identity();  // Set up an identity matrix
+		mat.identity();  
 
 		float ct = cosf(theta);
 		float st = sinf(theta);
 
-		// Fill in rotation matrix for X axis
 		mat.a[1][1] = ct;
 		mat.a[1][2] = -st;
 		mat.a[2][1] = st;
@@ -848,61 +847,110 @@ public:
 	}
 
 	// Slerp (Spherical Linear Interpolation)
-	static Quaternion slerp(const Quaternion& q1, const Quaternion& q2, float t) {
-		float cos;
-		Quaternion q1_ = Quaternion(q1.a, q1.b, q1.c, q1.d);
+	//static Quaternion slerp(const Quaternion& q1, const Quaternion& q2, float t) {
+	//	float cos;
+	//	Quaternion q1_ = Quaternion(q1.a, q1.b, q1.c, q1.d);
 
-		cos = q1.a * q2.a + q1.b * q2.b + q1.c * q2.c + q1.d * q2.d;
-		if (cos < 0) {
-			Quaternion q1_ = Quaternion(-q1.a, -q1.b, -q1.c, -q1.d);
-			cos = fabs(cos);
+	//	cos = q1.a * q2.a + q1.b * q2.b + q1.c * q2.c + q1.d * q2.d;
+	//	if (cos < 0) {
+	//		Quaternion q1_ = Quaternion(-q1.a, -q1.b, -q1.c, -q1.d);
+	//		cos = fabs(cos);
+	//	}
+
+	//	if (cos > 0.95) {
+	//		return Quaternion(
+	//			(1 - t) * q1_.a + t * q2.a,
+	//			(1 - t) * q1_.b + t * q2.b,
+	//			(1 - t) * q1_.c + t * q2.c,
+	//			(1 - t) * q1_.d + t * q2.d
+	//		).normalized();
+	//	}
+
+	//	float theta = acos(cos);
+	//	float sinTheta = sinf(theta);
+	//	// sin((1-t)theta) * q1_ / sin theta  +  sin(t*theta) * q2 / sin(theta)
+	//	float a_ = sinf((1 - t) * theta) * q1_.a / sinTheta + sinf(t * theta) * q2.a / sinTheta;
+	//	float b_ = sinf((1 - t) * theta) * q1_.b / sinTheta + sinf(t * theta) * q2.b / sinTheta;
+	//	float c_ = sinf((1 - t) * theta) * q1_.c / sinTheta + sinf(t * theta) * q2.c / sinTheta;
+	//	float d_ = sinf((1 - t) * theta) * q1_.d / sinTheta + sinf(t * theta) * q2.d / sinTheta;
+
+	//	return Quaternion(a_,b_,c_,d_).normalized();
+	//}
+
+	static Quaternion slerp(const Quaternion q0, const Quaternion q1, float t) {
+		float dot = q1.a * q0.a + q1.b * q0.b + q1.c * q0.c + q1.d * q0.d;;
+		Quaternion q1New = q1;
+		// if dot product is negative, need to negate q1 to make sure the path is shortest
+		if (dot < 0) {
+			q1New = Quaternion(-q1.a, -q1.b, -q1.c, -q1.d);
+			dot = -dot; // change dot to positive
 		}
 
-		if (cos > 0.95) {
-			return Quaternion(
-				(1 - t) * q1_.a + t * q2.a,
-				(1 - t) * q1_.b + t * q2.b,
-				(1 - t) * q1_.c + t * q2.c,
-				(1 - t) * q1_.d + t * q2.d
-			).normalized();
+		// angle between the quaternions
+		float theta = acosf(dot);
+		if (theta == 0)
+		{
+			return q0;
 		}
-
-		float theta = acos(cos);
 		float sinTheta = sinf(theta);
-		// sin((1-t)theta) * q1_ / sin theta  +  sin(t*theta) * q2 / sin(theta)
-		float a_ = sinf((1 - t) * theta) * q1_.a / sinTheta + sinf(t * theta) * q2.a / sinTheta;
-		float b_ = sinf((1 - t) * theta) * q1_.b / sinTheta + sinf(t * theta) * q2.b / sinTheta;
-		float c_ = sinf((1 - t) * theta) * q1_.c / sinTheta + sinf(t * theta) * q2.c / sinTheta;
-		float d_ = sinf((1 - t) * theta) * q1_.d / sinTheta + sinf(t * theta) * q2.d / sinTheta;
-
-		return Quaternion(a_,b_,c_,d_).normalized();
+		// weight
+		float weight0 = sinf((1 - t) * theta) / sinTheta;
+		float weight1 = sinf(t * theta) / sinTheta;
+		return Quaternion(weight0 * q0.a + weight1 * q1New.a,
+			weight0 * q0.b + weight1 * q1New.b,
+			weight0 * q0.c + weight1 * q1New.c,
+			weight0 * q0.d + weight1 * q1New.d);
 	}
-
-	
 
 	// Convert quaternion to a rotation matrix (3x3)
 	Matrix toMatrix() const {
+		//Matrix matrix;
+		//matrix.a[0][0] = 1 - 2 * b * b - 2 * d * d;
+		//matrix.a[0][1] = 2 * b * c - 2 * d * a;
+		//matrix.a[0][2] = 2 * b * d + 2 * c * a;
+
+		//matrix.a[1][0] = 2 * b * c + 2 * d * a;
+		//matrix.a[1][1] = 1 - 2 * b * b - 2 * d * d;
+		//matrix.a[1][2] = 2 * c * d - 2 * b * a;
+
+		//matrix.a[2][0] = 2 * b * d - 2 * c * a;
+		//matrix.a[2][1] = 2 * c * d + 2 * b * a;
+		//matrix.a[2][2] = 1 - 2 * b * b - 2 * c * c;
+
+		////extend to 4* 4
+		//matrix.a[0][3] = 0.0f;
+		//matrix.a[1][3] = 0.0f;
+		//matrix.a[2][3] = 0.0f;
+		//matrix.a[3][0] = 0.0f;
+		//matrix.a[3][1] = 0.0f;
+		//matrix.a[3][2] = 0.0f;
+		//matrix.a[3][3] = 1.0f;
+		float xx = q[0] * q[0];
+		float xy = q[0] * q[1];
+		float xz = q[0] * q[2];
+		float yy = q[1] * q[1];
+		float zz = q[2] * q[2];
+		float yz = q[1] * q[2];
+		float wx = q[3] * q[0];
+		float wy = q[3] * q[1];
+		float wz = q[3] * q[2];
 		Matrix matrix;
-		matrix.a[0][0] = 1 - 2 * b * b - 2 * d * d;
-		matrix.a[0][1] = 2 * b * c - 2 * d * a;
-		matrix.a[0][2] = 2 * b * d + 2 * c * a;
-
-		matrix.a[1][0] = 2 * b * c + 2 * d * a;
-		matrix.a[1][1] = 1 - 2 * b * b - 2 * d * d;
-		matrix.a[1][2] = 2 * c * d - 2 * b * a;
-
-		matrix.a[2][0] = 2 * b * d - 2 * c * a;
-		matrix.a[2][1] = 2 * c * d + 2 * b * a;
-		matrix.a[2][2] = 1 - 2 * b * b - 2 * c * c;
-
-		//extend to 4* 4
-		matrix.a[0][3] = 0.0f;
-		matrix.a[1][3] = 0.0f;
-		matrix.a[2][3] = 0.0f;
-		matrix.a[3][0] = 0.0f;
-		matrix.a[3][1] = 0.0f;
-		matrix.a[3][2] = 0.0f;
-		matrix.a[3][3] = 1.0f;
+		matrix[0] = 1.0f - 2.0f * (yy + zz);
+		matrix[1] = 2.0f * (xy - wz);
+		matrix[2] = 2.0f * (xz + wy);
+		matrix[3] = 0.0;
+		matrix[4] = 2.0f * (xy + wz);
+		matrix[5] = 1.0f - 2.0f * (xx + zz);
+		matrix[6] = 2.0f * (yz - wx);
+		matrix[7] = 0.0;
+		matrix[8] = 2.0f * (xz - wy);
+		matrix[9] = 2.0f * (yz + wx);
+		matrix[10] = 1.0f - 2.0f * (xx + yy);
+		matrix[11] = 0.0;
+		matrix[12] = 0;
+		matrix[13] = 0;
+		matrix[14] = 0;
+		matrix[15] = 1;
 
 		return matrix;
 	}

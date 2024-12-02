@@ -98,11 +98,23 @@ public:
 
     void updateConstantVS(std::string modelName, std::string bufferName, std::string variableName, void* data) {
         // Find the constant buffer associated with the vertex shader
+        updateConstant(modelName, bufferName, variableName, data);
+    }
+
+    void updateConstant(std::string modelName, std::string bufferName, std::string variableName, void* data) {
+        // Find the constant buffer associated with the vertex shader
         for (int i = 0; i < vsConstantBuffers.size(); i++) {
             //if (vsConstantBuffers[i].name == bufferName) {
-                vsConstantBuffers[i].update(variableName, data);
-           //}
-         }
+            vsConstantBuffers[i].update(variableName, data);
+            
+            //}
+        }
+    }
+    //tex
+    void updateTexturePS(DXcore* core, string name, ID3D11ShaderResourceView* srv) {
+        core->devicecontext->PSSetShaderResources(textureBindPointsPS[name], 1, &srv);
+        
+
     }
 
     void apply(DXcore* core) {
@@ -118,5 +130,7 @@ public:
         }
 
     }
+
+
 
 };
