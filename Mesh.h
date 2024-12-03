@@ -72,15 +72,12 @@ public:
 		//OutputDebugString(L"Debug message: This is a test output\n");
 	}
 
-
 };
 
 class Model_static {
 public:	
 	std::vector<Mesh> meshes;
 	std::vector<std::string> textureFilenames;
-	Shader shader;
-	
 
 	void init(std::string filename, DXcore* core) {
 		GEMLoader::GEMModelLoader loader;
@@ -103,14 +100,12 @@ public:
 
 			meshes.push_back(mesh);
 		}
-		
-
 	}
 
-	void draw(DXcore* core, TextureManager textures, Shader* shader) {////////////////
+	void draw(DXcore* core, TextureManager* textures, Shader* shader) {
 		for (int i = 0; i < meshes.size(); i++)
 		{
-			shader->updateTexturePS(core, "tex", textures.find(textureFilenames[i]));
+			shader->updateTexturePS(core, "tex", textures->find(textureFilenames[i]));
 			meshes[i].draw(core);
 		}
 	}
@@ -122,7 +117,6 @@ public:
 	std::vector<Mesh> meshes;
 	Animation animation;
 	std::vector<std::string> textureFilenames;
-	Shader shader;
 	TextureManager textures;
 
 	void init(std::string filename, DXcore* core) {
@@ -187,10 +181,10 @@ public:
 		}
 	}
 
-	void draw(DXcore* core) {
+	void draw(DXcore* core, TextureManager* textures, Shader* shader) {
 		for (int i = 0; i < meshes.size(); i++)
 		{
-			//shader.updateTexturePS(core, "tex", textures.find(textureFilenames[i]));
+			shader->updateTexturePS(core, "tex", textures->find(textureFilenames[i]));
 			meshes[i].draw(core);
 		}
 	}
@@ -200,7 +194,7 @@ public:
 class Plane {
 public:
 	Mesh mesh;
-	
+	TextureManager textures;
 	STATIC_VERTEX addVertex(Vec3 p, Vec3 n, float tu, float tv)
 	{
 		STATIC_VERTEX v;
@@ -224,10 +218,15 @@ public:
 		std::vector<unsigned int> indices;
 		indices.push_back(2); indices.push_back(1); indices.push_back(0);
 		indices.push_back(1); indices.push_back(2); indices.push_back(3);
+
 		mesh.init_static(core, vertices, indices);
 
-	}
 
+	}
+	void draw(DXcore* core, TextureManager* textures, Shader* shader, std::string name) {
+		shader->updateTexturePS(core, "tex", textures->find(name));
+		mesh.draw(core);
+	}
 };
 
 class Cube {

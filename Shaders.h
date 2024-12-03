@@ -46,13 +46,13 @@ public:
         core->device->CreateVertexShader(shader->GetBufferPointer(), shader->GetBufferSize(), NULL, &vertexShader);
 
          //layout description
-        D3D11_INPUT_ELEMENT_DESC layoutDesc_static[] =
-        {
-            { "POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, 							D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, 							D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, 							D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, 							D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        };
+        //D3D11_INPUT_ELEMENT_DESC layoutDesc_static[] =
+        //{
+        //    { "POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, 							D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        //    { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, 							D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        //    { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, 							D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        //    { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, 							D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        //};
 
         D3D11_INPUT_ELEMENT_DESC layoutDesc_animated[] = {
             { "POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, 								D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -91,30 +91,22 @@ public:
         string psdata = getFileData(ps_filename);
         loadVS(core,vsdata);
         loadPS(core,psdata);
-
         //message box
 
 	}
 
     void updateConstantVS(std::string modelName, std::string bufferName, std::string variableName, void* data) {
         // Find the constant buffer associated with the vertex shader
-        updateConstant(modelName, bufferName, variableName, data);
-    }
-
-    void updateConstant(std::string modelName, std::string bufferName, std::string variableName, void* data) {
-        // Find the constant buffer associated with the vertex shader
         for (int i = 0; i < vsConstantBuffers.size(); i++) {
             //if (vsConstantBuffers[i].name == bufferName) {
             vsConstantBuffers[i].update(variableName, data);
-            
             //}
         }
     }
+
     //tex
     void updateTexturePS(DXcore* core, string name, ID3D11ShaderResourceView* srv) {
         core->devicecontext->PSSetShaderResources(textureBindPointsPS[name], 1, &srv);
-        
-
     }
 
     void apply(DXcore* core) {
@@ -130,7 +122,5 @@ public:
         }
 
     }
-
-
 
 };
