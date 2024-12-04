@@ -8,7 +8,8 @@ class Camera {
 public:
 	Vec3 position;
     Quaternion orientation; 
-	Matrix rotation;
+	Vec3 rot;
+
     float scale;
 	float mouseX_last, mouseY_last;
 	bool flag;
