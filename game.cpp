@@ -50,7 +50,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 	float fov = 45.0f;
 
 	// calculate world matrix and projection matrix
-	worldMatrix_tree = Matrix::worldMatrix(Vec3(-4, 0, -4), Vec3(0.08, 0.08, 0.08), 0, 0, 0);
+	worldMatrix_tree = Matrix::worldMatrix(Vec3(-4, 0, -4), Vec3(0.05, 0.05, 0.05), 0, 0, 0);
 	worldMatrix_trex = Matrix::worldMatrix(Vec3(0, 0, 0), Vec3(1, 1, 1), 0, 0, 0);
 	worldMatrix_plane = Matrix::worldMatrix(Vec3(0, 0, 0), Vec3(10, 10, 10), 0, 0, 0);
 
