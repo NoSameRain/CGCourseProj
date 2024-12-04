@@ -244,7 +244,7 @@ public:
 	}
 	static Matrix rotateX(float theta) {
 		Matrix mat;
-		mat.identity();  
+		mat.identity();
 
 		float ct = cosf(theta);
 		float st = sinf(theta);
@@ -377,7 +377,7 @@ public:
 	Matrix lookAtMat(const Vec3& from, const Vec3& to, const Vec3& up) {
 		Matrix lookat;
 		Vec3 dir, right, up_;
-		dir = from - to;
+		dir = to - from;
 		dir = dir.normalize();
 		right = cross(up, dir).normalize(); //normalize????????????????
 		up_ = cross(dir, right).normalize(); //????????????????
@@ -390,15 +390,15 @@ public:
 		lookat.m[5] = up_.y;
 		lookat.m[6] = up_.z;
 
-		lookat.m[8] = dir.x;
-		lookat.m[9] = dir.y;
-		lookat.m[10] = dir.z;
+		lookat.m[8] = -dir.x;
+		lookat.m[9] = -dir.y;
+		lookat.m[10] = -dir.z;
 		lookat.m[15] = 1.0f;
 
 		// transltion
 		lookat.m[3] = -from.dot(right);
 		lookat.m[7] = -from.dot(up_);
-		lookat.m[11] = -from.dot(dir);
+		lookat.m[11] = from.dot(dir);
 		//std::cout << "from " << from.x << " " << from.y << " " << from.z << std::endl;
 		//std::cout<< "dir " << dir.x << " " << dir.y << " " << dir.z << std::endl;
 		//std::cout << from.dot(dir) << std::endl;
@@ -471,7 +471,7 @@ public:
 		float c_ = sinf((1 - t) * theta) * q1_.c / sinTheta + sinf(t * theta) * q2.c / sinTheta;
 		float d_ = sinf((1 - t) * theta) * q1_.d / sinTheta + sinf(t * theta) * q2.d / sinTheta;
 
-		return Quaternion(a_,b_,c_,d_).normalized();
+		return Quaternion(a_, b_, c_, d_).normalized();
 	}
 
 	// convert quaternion to a 4*4 rotation matrix 
@@ -507,7 +507,7 @@ public:
 	}
 
 	// use rotation axis and angle to create Quaternion 
-	Quaternion fromAxisAngle(Vec3 _axis, const float angle) const  {
+	Quaternion fromAxisAngle(Vec3 _axis, const float angle) const {
 		Vec3 axis = _axis.normalize();
 		float halfAngle = angle / 2.f;
 		float cosHalfAngle = cosf(halfAngle);
@@ -529,6 +529,17 @@ public:
 		);
 	}
 
+	Vec3 operator*(const Vec3& _q) const {
+		Quaternion q = Quaternion(0, _q.x, _q.y, _q.z).normalized();
+		Quaternion res = Quaternion(
+			a * q.a - b * q.b - c * q.c - d * q.d,
+			a * q.b + b * q.a + c * q.d - d * q.c,
+			a * q.c - b * q.d + c * q.a + d * q.b,
+			a * q.d + b * q.c - c * q.b + d * q.a
+		);
+		return Vec3(res.b, res.c, res.d);
+	}
+
 	Vec3 toEulerAngle() const {
 		float pitch;
 		if (abs(-2.f * (a * c - d * b)) >= 1) pitch = copysign(M_PI / 2, -2.f * (a * c - d * b));
@@ -539,20 +550,38 @@ public:
 		return Vec3(pitch, yaw, roll);
 	}
 
-	Quaternion fromEulerAngle(const Vec3 euler) const {
-		float sin_pitch = sinf(euler.x / 2.f);
-		float cos_pitch = cosf(euler.x / 2.f);
-		float sin_yaw = sinf(euler.y / 2.f);
-		float cos_yaw = cosf(euler.y / 2.f);
-		float sin_roll = sinf(euler.z / 2.f);
-		float cos_roll = cosf(euler.z / 2.f);
+	static Quaternion fromEulerAngle(const Vec3& _euler) {
+
+		Vec3 euler = _euler * (M_PI / 180.f);  // Convert degrees to radians
+
+		// Assuming Y-X-Z (Yaw-Pitch-Roll) order
+		float cy = cos(euler.z * 0.5f);
+		float sy = sin(euler.z * 0.5f);
+		float cp = cos(euler.x * 0.5f);
+		float sp = sin(euler.x * 0.5f);
+		float cr = cos(euler.y * 0.5f);
+		float sr = sin(euler.y * 0.5f);
 
 		return Quaternion(
-			cos_yaw* cos_pitch* cos_roll+ sin_pitch* sin_yaw* sin_roll,
-			sin_roll * cos_pitch * cos_yaw - cos_roll * sin_pitch * sin_yaw, 
-			cos_roll * sin_pitch * cos_yaw + sin_roll * cos_pitch * sin_yaw, 
-			cos_roll * cos_pitch * sin_yaw - sin_roll * sin_pitch * cos_yaw  
+			cr * cp * cy + sr * sp * sy,
+			sr * cp * cy - cr * sp * sy,
+			cr * sp * cy + sr * cp * sy,
+			cr * cp * sy - sr * sp * cy
 		);
+
+		/*Vec3 euler = _euler * (M_PI / 180.f);
+		float cy = cos(euler.y * 0.5f);
+		float sy = sin(euler.y * 0.5f);
+		float cp = cos(euler.x * 0.5f);
+		float sp = sin(euler.x * 0.5f);
+		float cr = cos(euler.z * 0.5f);
+		float sr = sin(euler.z * 0.5f);
+
+		return Quaternion(
+			cr * cp * cy + sr * sp * sy,
+			sr * cp * cy - cr * sp * sy,
+			cr * sp * cy + sr * cp * sy,
+			cr * cp * sy - sr * sp * cy);*/
 	}
 };
 
