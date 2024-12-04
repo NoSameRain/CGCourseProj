@@ -6,10 +6,10 @@
 #include "mathLibrary.h"
 #include "GamesEngineeringBase.h"
 #include "Camera.h"
-std::wostringstream woss;
-void debugMessage(const std::wstring& message) {
-	OutputDebugString(message.c_str());
-}
+//std::wostringstream woss;
+//void debugMessage(const std::wstring& message) {
+//	OutputDebugString(message.c_str());
+//}
 
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow) 
 {

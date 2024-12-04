@@ -507,8 +507,8 @@ public:
 	}
 
 	// use rotation axis and angle to create Quaternion 
-	Quaternion fromAxisAngle(const Vec3 _axis, const float angle) const  {
-		Vec3 axis = axis.normalize();
+	Quaternion fromAxisAngle(Vec3 _axis, const float angle) const  {
+		Vec3 axis = _axis.normalize();
 		float halfAngle = angle / 2.f;
 		float cosHalfAngle = cosf(halfAngle);
 		float sinHalfAngle = sinf(halfAngle);
@@ -516,22 +516,22 @@ public:
 			cosHalfAngle,
 			axis.x * sinHalfAngle,
 			axis.y * sinHalfAngle,
-			sinHalfAngle
+			axis.z * sinHalfAngle
 		);
 	}
 
 	Quaternion operator*(const Quaternion& q) const {
 		return Quaternion(
 			a * q.a - b * q.b - c * q.c - d * q.d,
-			a * q.a + b * q.b + c * q.c - d * q.d,
-			a * q.a - b * q.b + c * q.c + d * q.d,
-			a * q.a + b * q.b - c * q.c + d * q.d
+			a * q.b + b * q.a + c * q.d - d * q.c,
+			a * q.c - b * q.d + c * q.a + d * q.b,
+			a * q.d + b * q.c - c * q.b + d * q.a
 		);
 	}
 
 	Vec3 toEulerAngle() const {
 		float pitch;
-		if(abs(-2.f * (a * c - d * b))>=1) pitch = copysign(M_PI / 2, -2.f * (a * c - d * b));
+		if (abs(-2.f * (a * c - d * b)) >= 1) pitch = copysign(M_PI / 2, -2.f * (a * c - d * b));
 		else pitch = asin(-2.f * (a * c - d * b));
 		float yaw = atan2(2.f * (a * b + c * d), 1.f - 2.f * (SQ(b) + SQ(c)));
 		float roll = atan2(2.f * (b * c + d * a), 1.f - 2.f * (SQ(a) + SQ(b)));

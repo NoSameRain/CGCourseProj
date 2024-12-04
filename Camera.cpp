@@ -2,10 +2,10 @@
 #include <string>
 #include <sstream>
 
-//std::wostringstream woss;
-//void debugMessage(const std::wstring& message) {
-//    OutputDebugString(message.c_str());
-//}
+std::wostringstream woss;
+void debugMessage(const std::wstring& message) {
+    OutputDebugString(message.c_str());
+}
 
 Camera::Camera() {
     position = Vec3(0, 5, 20);
@@ -25,24 +25,24 @@ void Camera::updateRotation(float dt, Window& win) {
     }
     
     // calculate mouse movement  
-    float moveX = (mousex - mouseX_last) * M_PI / 180.f * 1;
-    float moveY = (mousey - mouseY_last) * M_PI / 180.f * 1;
+    float moveX = (mousex - mouseX_last) * M_PI / 180.f * 0.1;
+    float moveY = (mousey - mouseY_last) * M_PI / 180.f * 0.1;
 
     //ignore tiny rotation
     float threshold = 0.01f; 
     if (abs(moveX) < threshold) moveX = 0;
     if (abs(moveY) < threshold) moveY = 0;
-    //woss << L"mouse: (" << win.mousex << L", " << mouseX_last <<  L")\n";
-    //debugMessage(woss.str());
+    woss << L"mouse: (" << win.mousex << L", " << mouseX_last <<  L")\n";
+    debugMessage(woss.str());
 
-    float pitchLimit = M_PI / 2.0f - 0.1f; // 限制到 ±90°
+    float pitchLimit = M_PI / 2.0f - 0.1f; // restrict rotation to -90 ~ 90
     Vec3 eulerAngle = orientation.toEulerAngle();
     float newPitch = clamp(eulerAngle.x + moveY, -pitchLimit, pitchLimit);
-    //moveY = newPitch - eulerAngle.x;
+    moveY = newPitch - eulerAngle.x;
 
 
     // quaternion for yaw rotation: around Y-axis
-    Quaternion yaw = yaw.fromAxisAngle(Vec3(0, 1, 0), -moveX);
+    Quaternion yaw = yaw.fromAxisAngle(Vec3(0, 1, 0), moveX);
     // quaternion for pitch rotation: around X-axis
     Quaternion pitch = pitch.fromAxisAngle(Vec3(1, 0, 0), moveY);
 
@@ -53,6 +53,10 @@ void Camera::updateRotation(float dt, Window& win) {
 
     mouseX_last = mousex;
     mouseY_last = mousey;
+
+    std::wostringstream woss;
+    //woss << L"Orientation: " << orientation.a << L", " << orientation.b << L", " << orientation.c << L", " << orientation.d << L"\n";
+   // debugMessage(woss.str());
 }
 
 //void Camera::updateRotation(float dt, Window& win) {
