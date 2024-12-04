@@ -1,12 +1,14 @@
 #pragma once
 class AnimationController {
 public:
-
+	float timer = 0.f;
+	float duration = 1.f;
 	enum state { Idle, roar, attack, death };
 	state currentState, nextState;
 	AnimationController() :currentState(Idle) {}
 
-	void updateNPCState(const bool insideAggroRange, const bool insideAttackRange, const float health) {
+	void updateNPCState(const bool insideAggroRange, const bool insideAttackRange, const float health, float dt) {
+		
 		switch (currentState) {
 		case Idle:
 			if (insideAggroRange) {
@@ -35,7 +37,15 @@ public:
 		case death:
 			break;
 		}
-		if (currentState != nextState) currentState = nextState;
+		// make the animation transitions smoother
+		if (currentState != nextState) {
+			timer += dt;
+			if (timer >= duration) {
+				currentState = nextState;
+				timer = 0.f;
+			}
+		}
+			
 	}
 
 	std::string stateToString() {

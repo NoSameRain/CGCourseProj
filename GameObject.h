@@ -101,7 +101,7 @@ public:
 		checkInsideAggroRange(playerPos);
 		checkInsideAttackRange(playerPos);
 		// update current animation state 
-		animController.updateNPCState(insideAggroRange, insideAttackRange, health);
+		animController.updateNPCState(insideAggroRange, insideAttackRange, health, dt);
 		animationInstance.update(animController.stateToString(), dt);
 	}
 
