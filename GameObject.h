@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "mathLibrary.h"
 #include "GamesEngineeringBase.h"
+#include "AnimationController.h"
 
 class GameObject {
 public:
@@ -56,23 +57,29 @@ public:
 
 class NPC: public GameObject {
 public:
+	Vec3 position;
 	float health;
 	float speed;
 	float aggroRange;
+	float attackRange;
 	bool insideAggroRange;
+	bool insideAttackRange;
 
 	Model_animated model;
 	AnimationInstance animationInstance;
+	AnimationController animController;
 
 	NPC(DXcore* core) {
 		health = 100.f;
-		speed = 10.f;
-		aggroRange = 10.f;
+		aggroRange = 20.f;
+		attackRange = 10.f;
 		insideAggroRange = false;
+		insideAttackRange = false;
+		position = Vec3(0, 0, 0);
 
 		shader.init("Shaders/VertexShader_anim.txt", "Shaders/PixelShader.txt", core);
 		model.init("Models/TRex.gem", core);
-		worldMatrix = Matrix::worldMatrix(Vec3(0, 0, 0), Vec3(1, 1, 1), 0, 0, 0);
+		worldMatrix = Matrix::worldMatrix(position, Vec3(1, 1, 1), 0, 0, 0);
 		// initialize animation instance
 		animationInstance.animation = &model.animation;
 		animationInstance.currentAnimation = "Idle";
@@ -80,8 +87,22 @@ public:
 		textures.load(core, "Textures/T-rex_Base_Color.png");
 	}
 
-	void updateAnimationInstance(float dt) {
-		animationInstance.update("Idle", dt);
+	void checkInsideAggroRange(Vec3 playerPos) {
+		if (position.distance(playerPos) <= aggroRange) insideAggroRange = true;
+		else insideAggroRange = false;
+	}
+
+	void checkInsideAttackRange(Vec3 playerPos) {
+		if (position.distance(playerPos) <= attackRange) insideAttackRange = true;
+		else insideAttackRange = false;
+	}
+
+	void updateAnimationInstance(float dt, Vec3 playerPos) {
+		checkInsideAggroRange(playerPos);
+		checkInsideAttackRange(playerPos);
+		// update current animation state 
+		animController.updateNPCState(insideAggroRange, insideAttackRange, health);
+		animationInstance.update(animController.stateToString(), dt);
 	}
 
 	void draw(DXcore* core, Matrix& vp) {

@@ -59,6 +59,10 @@ public:
 	Vec3& operator/=(const Vec3& v) { x /= v.x, y /= v.y, z /= v.z; return *this; }
 	Vec3& operator=(const Vec3& v) { x = v.x, y = v.y, z = v.z; return *this; }
 
+	float distance(const Vec3& v) const {
+		Vec3 delta = Vec3(v.x - x, v.y - y, v.z - z);
+		return sqrtf(delta.x * delta.x + delta.y * delta.y + delta.z * delta.z);
+	}
 	float Length() const {
 		return SQ(x) + SQ(y) + SQ(z);
 	}

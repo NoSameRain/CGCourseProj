@@ -44,6 +44,10 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		window.processMessages();
 		core.clear();
 
+		if (window.keys[VK_ESCAPE]) {
+			break;
+		}
+
 		float dt = timer.dt();
 
 		//------------------------------------------CAMERA----------------------------------------------
@@ -63,7 +67,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		// draw tree
 		pine.draw(&core,vp);
 		// draw npc
-		npc.updateAnimationInstance(dt);
+		npc.updateAnimationInstance(dt, camera.position);
 		npc.draw(&core, vp);
 
 		core.present();
