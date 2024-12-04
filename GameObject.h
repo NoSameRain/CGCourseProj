@@ -21,7 +21,7 @@ public:
 	Ground(DXcore* core) {
 		shader.init("Shaders/VertexShader_static.txt", "Shaders/PixelShader_ground.txt", core);
 		plane.init(core);
-		worldMatrix = Matrix::worldMatrix(Vec3(0, 0, 0), Vec3(10, 10, 10), 0, 0, 0);
+		worldMatrix = Matrix::worldMatrix(Vec3(0, 0, 0), Vec3(6, 1, 6), 0, 0, 0);
 	}
 
 	void draw(DXcore* core, Matrix& vp) {
@@ -36,22 +36,33 @@ public:
 class Foliage : public GameObject {
 public:	
 	Model_static model;
-	Foliage(DXcore* core) {
+	std::vector<Matrix> worldMatrices;
+	Vec3 position;
+	int num = 10;
+	Foliage(DXcore* core, std::string gemName, std::string texName1, std::string texName2, std::string texName3, Vec3 _position, Vec3 scale, int _num) {
 		shader.init("Shaders/VertexShader_static.txt", "Shaders/PixelShader.txt", core);
-		model.init("Models/pine.gem", core);
-		worldMatrix = Matrix::worldMatrix(Vec3(-4, 0, -4), Vec3(0.05, 0.05, 0.05), 0, 0, 0);
-
-		textures.load(core, "Textures/bark09.png");
-		textures.load(core, "Textures/pine branch.png");
-		textures.load(core, "Textures/stump01.png");
+		model.init(gemName, core);
+		position = _position;
+		num = _num;
+		textures.load(core, texName1);
+		textures.load(core, texName2);
+		textures.load(core, texName3);
+		for (int i = 0; i < num; i++) {
+			int seedX = rand() % 70;
+			int seedZ = rand() % 90;
+			Vec3 v = position + Vec3(seedX, 0, seedZ);
+			worldMatrices.push_back(Matrix::worldMatrix(v, scale, 0, 0, 0));
+		}
 	}
 
 	void draw(DXcore* core, Matrix& vp) {
-		shader.updateConstantVS("StaticModel", "staticMeshBuffer", "W", &worldMatrix);
-		shader.updateConstantVS("StaticModel", "staticMeshBuffer", "VP", &vp);
+		for (int i = 0; i < num; i++) {
+			shader.updateConstantVS("StaticModel", "staticMeshBuffer", "W", &worldMatrices[i]);
+			shader.updateConstantVS("StaticModel", "staticMeshBuffer", "VP", &vp);
 
-		shader.apply(core);
-		model.draw(core, &textures, &shader);
+			shader.apply(core);
+			model.draw(core, &textures, &shader);
+		}
 	}
 };
 

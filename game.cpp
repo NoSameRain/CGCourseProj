@@ -36,7 +36,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 	// initialize sampler
 	sampler.init(&core);
 	// initaiize gameObect
-	Foliage pine(&core);
+	Foliage pine(&core, "Models/pine.gem", "Textures/bark09.png", "Textures/pine branch.png", "Textures/stump01.png", Vec3(-45,0,-40), Vec3(0.05, 0.05, 0.05), 30);
+	Foliage flower(&core, "Models/flower1.gem", "Textures/flower daisy.png", "Textures/plant05.png", "Textures/daisy leaf.png", Vec3(-30, 0, -20), Vec3(0.04, 0.04, 0.04), 50);
 	NPC npc(&core);
 	Ground ground(&core);
 	
@@ -64,8 +65,9 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 
 		// draw ground
 		ground.draw(&core, vp);
-		// draw tree
+		// draw foliage
 		pine.draw(&core,vp);
+		flower.draw(&core, vp);
 		// draw npc
 		npc.updateAnimationInstance(dt, camera.position);
 		npc.draw(&core, vp);
