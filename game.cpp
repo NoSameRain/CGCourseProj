@@ -6,7 +6,10 @@
 #include "mathLibrary.h"
 #include "GamesEngineeringBase.h"
 #include "Camera.h"
-
+std::wostringstream woss;
+void debugMessage(const std::wstring& message) {
+	OutputDebugString(message.c_str());
+}
 
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow) 
 {
@@ -47,7 +50,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 	float fov = 45.0f;
 
 	// calculate world matrix and projection matrix
-	worldMatrix_tree = Matrix::worldMatrix(Vec3(-4, 0, -4), Vec3(0.03, 0.03, 0.03), 0, 0, 0);
+	worldMatrix_tree = Matrix::worldMatrix(Vec3(-4, 0, -4), Vec3(0.08, 0.08, 0.08), 0, 0, 0);
 	worldMatrix_trex = Matrix::worldMatrix(Vec3(0, 0, 0), Vec3(1, 1, 1), 0, 0, 0);
 	worldMatrix_plane = Matrix::worldMatrix(Vec3(0, 0, 0), Vec3(10, 10, 10), 0, 0, 0);
 
@@ -77,10 +80,14 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 
 		//------------------------------------------CAMERA----------------------------------------------
 		// update camera -- first personal view
-		camera.updateMovement(dt, window);
-		// update LookAtMatrix using camera instance to calculate vp matrix
-		view = view.lookAtMat(camera.position, camera.position + camera.forward, camera.up);
+		//int x = window.mousex;
+		//int y = window.mousey;
+		camera.updateRotation(dt, window);
+		camera.updateTranslation(dt, window);
+		view = camera.getLookAtMat();
 		vp =  view * projection;
+		//woss << L"mouse: (" << x << L", " << y << L")\n";
+		//debugMessage(woss.str());
 
 		//------------------------------------------DRAW------------------------------------------------
 		sampler.bind(&core);

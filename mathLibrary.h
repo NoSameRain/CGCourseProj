@@ -1,7 +1,7 @@
 ﻿#pragma once
 #define _USE_MATH_DEFINES
 #include<cmath>
-#include<iostream>
+#include<iostream>                   
 #include "memory.h"
 #define SQ(x) (x) * (x)
 #define max(a,b)(a>b?a:b)
@@ -95,10 +95,6 @@ public:
 			max(v1.v[2], v2.v[2]));
 	}
 
-	float Max() const
-	{
-		return max(x, max(y, z));
-	}
 
 };
 static Vec3 cross(const Vec3& v1, const Vec3& v2)
@@ -107,20 +103,7 @@ static Vec3 cross(const Vec3& v1, const Vec3& v2)
 		v1.v[2] * v2.v[0] - v1.v[0] * v2.v[2],
 		v1.v[0] * v2.v[1] - v1.v[1] * v2.v[0]);
 }
-Vec3 Max(const Vec3& v1, const Vec3& v2)
-{
-	return Vec3(max(v1.v[0], v2.v[0]),
-		max(v1.v[1], v2.v[1]),
-		max(v1.v[2], v2.v[2]));
-}
-float Max(Vec3& v)
-{
-	return max(v.x, max(v.y, v.z));
-}
-float dot(const Vec3& v1, const Vec3& v2)
-{
-	return v1.v[0] * v2.v[0] + v1.v[1] * v2.v[1] + v1.v[2] * v2.v[2];
-}
+
 //-------------------------------Vec4--------------------------------
 class Vec4
 {
@@ -521,6 +504,55 @@ public:
 		matrix[15] = 1;
 
 		return matrix;
+	}
+
+	// use rotation axis and angle to create Quaternion 
+	Quaternion fromAxisAngle(const Vec3 _axis, const float angle) const  {
+		Vec3 axis = axis.normalize();
+		float halfAngle = angle / 2.f;
+		float cosHalfAngle = cosf(halfAngle);
+		float sinHalfAngle = sinf(halfAngle);
+		return Quaternion(
+			cosHalfAngle,
+			axis.x * sinHalfAngle,
+			axis.y * sinHalfAngle,
+			sinHalfAngle
+		);
+	}
+
+	Quaternion operator*(const Quaternion& q) const {
+		return Quaternion(
+			a * q.a - b * q.b - c * q.c - d * q.d,
+			a * q.a + b * q.b + c * q.c - d * q.d,
+			a * q.a - b * q.b + c * q.c + d * q.d,
+			a * q.a + b * q.b - c * q.c + d * q.d
+		);
+	}
+
+	Vec3 toEulerAngle() const {
+		float pitch;
+		if(abs(-2.f * (a * c - d * b))>=1) pitch = copysign(M_PI / 2, -2.f * (a * c - d * b));
+		else pitch = asin(-2.f * (a * c - d * b));
+		float yaw = atan2(2.f * (a * b + c * d), 1.f - 2.f * (SQ(b) + SQ(c)));
+		float roll = atan2(2.f * (b * c + d * a), 1.f - 2.f * (SQ(a) + SQ(b)));
+
+		return Vec3(pitch, yaw, roll);
+	}
+
+	Quaternion fromEulerAngle(const Vec3 euler) const {
+		float sin_pitch = sinf(euler.x / 2.f);
+		float cos_pitch = cosf(euler.x / 2.f);
+		float sin_yaw = sinf(euler.y / 2.f);
+		float cos_yaw = cosf(euler.y / 2.f);
+		float sin_roll = sinf(euler.z / 2.f);
+		float cos_roll = cosf(euler.z / 2.f);
+
+		return Quaternion(
+			cos_yaw* cos_pitch* cos_roll+ sin_pitch* sin_yaw* sin_roll,
+			sin_roll * cos_pitch * cos_yaw - cos_roll * sin_pitch * sin_yaw, 
+			cos_roll * sin_pitch * cos_yaw + sin_roll * cos_pitch * sin_yaw, 
+			cos_roll * cos_pitch * sin_yaw - sin_roll * sin_pitch * cos_yaw  
+		);
 	}
 };
 
