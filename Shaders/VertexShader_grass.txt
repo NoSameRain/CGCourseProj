@@ -20,12 +20,18 @@ struct PS_INPUT
 	float3 Tangent : TANGENT;
 	float2 TexCoords : TEXCOORD;
 };
-
+ 
 PS_INPUT VS(VS_INPUT input)
 {
 	PS_INPUT output;
+	// vertex animation
+	float4 animatedPos =  input.Pos;
+	if(animatedPos.y > 12.0) {
+		animatedPos.z += sin(time/2)*8;
+		animatedPos.x += sin(time)*8;
 
-	output.Pos = mul(input.Pos, W);
+	}
+	output.Pos = mul(animatedPos, W);
 	output.Pos = mul(output.Pos, VP);
 	output.Normal = mul(input.Normal, (float3x3)W);
 	output.Tangent = mul(input.Tangent, (float3x3)W);

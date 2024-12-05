@@ -39,8 +39,9 @@ public:
 	std::vector<Matrix> worldMatrices;
 	Vec3 position;
 	int num = 10;
-	Foliage(DXcore* core, std::string gemName, std::string texName1, std::string texName2, std::string texName3, Vec3 _position, Vec3 scale, int _num) {
-		shader.init("Shaders/VertexShader_static.txt", "Shaders/PixelShader.txt", core);
+	float timer = 0.f;
+	Foliage(DXcore* core, std::string VertexSHaderName, std::string gemName, std::string texName1, std::string texName2, std::string texName3, Vec3 _position, Vec3 scale, int _num) {
+		shader.init(VertexSHaderName, "Shaders/PixelShader.txt", core);
 		model.init(gemName, core);
 		position = _position;
 		num = _num;
@@ -55,10 +56,12 @@ public:
 		}
 	}
 
-	void draw(DXcore* core, Matrix& vp) {
+	void draw(DXcore* core, Matrix& vp, float dt) {
+		timer += dt;
 		for (int i = 0; i < num; i++) {
 			shader.updateConstantVS("StaticModel", "staticMeshBuffer", "W", &worldMatrices[i]);
 			shader.updateConstantVS("StaticModel", "staticMeshBuffer", "VP", &vp);
+			shader.updateConstantVS("StaticModel", "staticMeshBuffer", "time", &timer);
 
 			shader.apply(core);
 			model.draw(core, &textures, &shader);
