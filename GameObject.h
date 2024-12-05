@@ -70,7 +70,6 @@ class NPC: public GameObject {
 public:
 	Vec3 position;
 	float health;
-	float speed;
 	float aggroRange;
 	float attackRange;
 	bool insideAggroRange;
@@ -80,17 +79,18 @@ public:
 	AnimationInstance animationInstance;
 	AnimationController animController;
 
+	NPC(){}
 	NPC(DXcore* core) {
 		health = 100.f;
-		aggroRange = 20.f;
-		attackRange = 10.f;
+		aggroRange = 30.f;
+		attackRange = 16.f;
 		insideAggroRange = false;
 		insideAttackRange = false;
 		position = Vec3(0, 0, 0);
 
 		shader.init("Shaders/VertexShader_anim.txt", "Shaders/PixelShader.txt", core);
 		model.init("Models/TRex.gem", core);
-		worldMatrix = Matrix::worldMatrix(position, Vec3(1, 1, 1), 0, 0, 0);
+		worldMatrix = Matrix::worldMatrix(position, Vec3(2, 2, 2), 0, 0, 0);
 		// initialize animation instance
 		animationInstance.animation = &model.animation;
 		animationInstance.currentAnimation = "Idle";
@@ -125,4 +125,34 @@ public:
 		model.draw(core, &textures, &shader);
 	}
 
+};
+
+class Player : public NPC {
+public:
+	Player(DXcore* core) {
+		position = Vec3(0, 0, 20);
+
+		shader.init("Shaders/VertexShader_anim.txt", "Shaders/PixelShader.txt", core);
+		model.init("Models/Soldier1.gem", core); 
+
+		worldMatrix = Matrix::worldMatrix(position, Vec3(0.06, 0.06, 0.06), 0,0, 0);
+		// initialize animation instance
+		animationInstance.animation = &model.animation;
+		animationInstance.currentAnimation = "idle";
+		// load texture
+		textures.load(core, "Textures/MaleDuty_3_OBJ_Happy_Packed0_Diffuse.png");
+		textures.load(core, "Textures/MaleDuty_3_OBJ_Serious_Packed0_Diffuse.png");
+	}
+
+	void updatePos(Vec3 camPos) {
+		position = camPos - Vec3(-0.8,9.5,-1.3);
+		worldMatrix = Matrix::worldMatrix(position, Vec3(0.058, 0.058, 0.058), 0, 0, 0);
+	}
+
+	void updateAnimationInstance(float dt) {
+		// update current animation state 
+		//animController.updateNPCState(insideAggroRange, insideAttackRange, health, dt);
+		//animationInstance.update(animController.stateToString(), dt);
+		animationInstance.update("rifle aiming idle", dt);
+	}
 };

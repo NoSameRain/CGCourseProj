@@ -7,6 +7,15 @@
 #include "Texture.h"
 #include <windows.h>
 
+void debugLog(const std::string& message) {
+	OutputDebugStringA((message + "\n").c_str());
+}
+
+void debugLog(const std::wstring& message) {
+	OutputDebugString((message + L"\n").c_str());
+}
+
+
 struct STATIC_VERTEX
 {
 	Vec3 pos;
@@ -158,6 +167,9 @@ public:
 		for (int i = 0; i < gemanimation.animations.size(); i++)
 		{
 			std::string name = gemanimation.animations[i].name;
+
+			debugLog("anim name: (" + name + ")");//---------------------------------debug------------------------------------
+
 			AnimationSequence aseq;
 			aseq.ticksPerSecond = gemanimation.animations[i].ticksPerSecond;
 			for (int n = 0; n < gemanimation.animations[i].frames.size(); n++)

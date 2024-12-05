@@ -37,9 +37,10 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 	sampler.init(&core);
 	// initaiize gameObect
 	Foliage pine(&core, "Models/pine.gem", "Textures/bark09.png", "Textures/pine branch.png", "Textures/stump01.png", Vec3(-45,0,-40), Vec3(0.05, 0.05, 0.05), 30);
-	Foliage flower(&core, "Models/flower1.gem", "Textures/flower daisy.png", "Textures/plant05.png", "Textures/daisy leaf.png", Vec3(-30, 0, -20), Vec3(0.04, 0.04, 0.04), 50);
+	Foliage flower(&core, "Models/flower1.gem", "Textures/flower daisy.png", "Textures/plant05.png", "Textures/daisy leaf.png", Vec3(-30, 0, -20), Vec3(0.06, 0.06, 0.06), 50);
 	NPC npc(&core);
 	Ground ground(&core);
+	Player player(&core);
 	
 	while (true) {
 		window.processMessages();
@@ -71,6 +72,10 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		// draw npc
 		npc.updateAnimationInstance(dt, camera.position);
 		npc.draw(&core, vp);
+		// draw player
+		player.updatePos(camera.position);
+		player.updateAnimationInstance(dt);
+		player.draw(&core, vp);
 
 		core.present();
 

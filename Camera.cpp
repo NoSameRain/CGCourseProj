@@ -2,13 +2,13 @@
 #include <string>
 #include <sstream>
 
-std::wostringstream woss;
-void debugMessage(const std::wstring& message) {
-    OutputDebugString(message.c_str());
-}
+//std::wostringstream woss;
+//void debugMessage(const std::wstring& message) {
+//    OutputDebugString(message.c_str());
+//}
 
 Camera::Camera() {
-    position = Vec3(0, 5, 20);
+    position = Vec3(0, 10, 20);
     orientation = Quaternion(1, 0, 0, 0);
     scale = 0.01f;
     flag = true;
