@@ -31,12 +31,18 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 	// initialize sampler
 	sampler.init(&core);
 	// initaiize gameObect
-	Foliage pine(&core, "Shaders/VertexShader_static.txt", "Models/pine.gem", "Textures/bark09.png", "Textures/pine branch.png", "Textures/stump01.png", Vec3(-45,0,-40), Vec3(0.05, 0.05, 0.05), 30);
-	Foliage flower(&core, "Shaders/VertexShader_grass.txt", "Models/flower1.gem", "Textures/flower daisy.png", "Textures/plant05.png", "Textures/daisy leaf.png", Vec3(-30, 0, -20), Vec3(0.08, 0.08, 0.08), 50);
+	Foliage pine(&core, "Shaders/VertexShader_static.txt", "Models/pine.gem", "Textures/bark09.png", "Textures/stump01.png", "Textures/pine branch.png",
+		"Textures/bark09_normal.png", "Textures/stump01_normal.png", "Textures/pine branch_Normal.png",  Vec3(-45,0,-40), Vec3(0.05, 0.05, 0.05), 30);
+	Foliage flower(&core, "Shaders/VertexShader_grass.txt", "Models/flower1.gem", "Textures/flower daisy.png", "Textures/plant05.png", "Textures/daisy leaf.png",
+		"Textures/flower daisy_Normal.png", "Textures/plant05_Normal.png", "Textures/daisy leaf_Normal.png", Vec3(-30, 0, -20), Vec3(0.08, 0.08, 0.08), 50);
 	NPC npc(&core);
 	Ground ground(&core);
-	Player player(&core);
+	Player player(&core, &sampler);
 	
+	// bind sampler to s0 and s1: s0 for diffuse, s1 for normal map
+	sampler.bind(&core, 0);
+	sampler.bind(&core, 1);
+
 	while (true) {
 		window.processMessages();
 		core.clear();
@@ -47,6 +53,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 
 		float dt = timer.dt();
 
+		
+
 		//------------------------------------------CAMERA----------------------------------------------
 		// update camera -- first personal view
 		camera.updateRotation(dt, window);
@@ -55,8 +63,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		vp =  view * projection;
 
 		//------------------------------------------DRAW------------------------------------------------
-		sampler.bind(&core);
-
+		
 		// draw ground
 		ground.draw(&core, vp);
 		// draw foliage

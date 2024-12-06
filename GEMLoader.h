@@ -97,7 +97,13 @@ namespace GEMLoader
 			}
 		}
 	};
+	//void debugLog(const std::string& message) {
+	//	OutputDebugStringA((message + "\n").c_str());
+	//}
 
+	//void debugLog(const std::wstring& message) {
+	//	OutputDebugString((message + L"\n").c_str());
+	//}
 	class GEMMaterial
 	{
 	public:
@@ -106,8 +112,10 @@ namespace GEMLoader
 		{
 			for (int i = 0; i < properties.size(); i++)
 			{
+				//debugLog("mat name: (" + properties[i].name + ")----------------------");
 				if (properties[i].name == name)
 				{
+					
 					return properties[i];
 				}
 			}

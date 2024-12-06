@@ -98,16 +98,17 @@ public:
     void updateConstantVS(std::string modelName, std::string bufferName, std::string variableName, void* data) {
         // Find the constant buffer associated with the vertex shader
         for (int i = 0; i < vsConstantBuffers.size(); i++) {
-            //if (vsConstantBuffers[i].name == bufferName) {
             vsConstantBuffers[i].update(variableName, data);
-            //}
         }
     }
 
-    //tex
-    void updateTexturePS(DXcore* core, string name, ID3D11ShaderResourceView* srv) {
-        core->devicecontext->PSSetShaderResources(textureBindPointsPS[name], 1, &srv);
+    //tex bind texture to t0 and t1 
+    void updateTexturePS(DXcore* core, UINT startSlot, ID3D11ShaderResourceView* srv) {
+        core->devicecontext->PSSetShaderResources(startSlot, 1, &srv);
     }
+    //void updateTexturePS(DXcore* core, string name, ID3D11ShaderResourceView* srv) {
+    //    core->devicecontext->PSSetShaderResources(textureBindPointsPS[name], 1, &srv);
+    //}
 
     void apply(DXcore* core) {
         core->devicecontext->IASetInputLayout(layout);

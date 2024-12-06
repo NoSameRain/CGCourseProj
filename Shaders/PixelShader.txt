@@ -1,5 +1,8 @@
+#define PI 3.14159265359
 Texture2D tex : register(t0);
 SamplerState samplerLinear : register(s0);
+Texture2D normalsTexture : register(t1);
+SamplerState normalSampler : register(s1);
 
 struct PS_INPUT
 {
@@ -11,14 +14,32 @@ struct PS_INPUT
 
 float4 PS(PS_INPUT input) : SV_Target0
 {
-    //float4 colour = tex.Sample(samplerLinear, input.TexCoords);
-    
+	float3 lightDir = normalize(float3(1, -1, 1));
+	float3 lightColour = float3(4,4,4);
+	//float3 lightColour = float3(1,0.5,0); // warm orange color
+	float3 ambient = float3(0.8,0.8,0.8);
+	
+	// normal mapping
+	float3 normal = normalize(input.Normal);
+	float3 tangent = normalize(input.Tangent);
+	float3 binormal = normalize(cross(input.Normal, tangent));
+	float3x3 TBN = float3x3(tangent, binormal, normal);
+	
+	float3 mapNormal = normalsTexture.Sample(normalSampler, input.TexCoords).xyz;
+	mapNormal = normalize(mapNormal * 10.0);
+	mapNormal = mapNormal * 2.0 - 1.0;
+
+	float3 localLightDir = mul(lightDir, transpose(TBN));
+
 	float4 albedo;
 	albedo = tex.Sample(samplerLinear, input.TexCoords);
 	if (albedo.a < 0.5)
 	{
     		discard;
 	}
-return float4(albedo.rgb, 1.0);
+	// diffuse
+	float3 diffuse = (albedo.rgb / PI) * (lightColour * max(dot(mapNormal, localLightDir), 0.0) + ambient );
+
+	return float4(diffuse.rgb, 1.0);
 
 }

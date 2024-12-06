@@ -61,7 +61,6 @@ public:
             init(core, width, height, channels, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, texels);
         }
         stbi_image_free(texels);
-
 	}
 
     void free() {
@@ -85,11 +84,9 @@ public:
         samplerDesc.MinLOD = 0;
         samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
         core->device->CreateSamplerState(&samplerDesc, &state);
-
-
     }
-    void bind(DXcore* core) {
-        core->devicecontext->PSSetSamplers(0, 1, &state);
+    void bind(DXcore* core, UINT startSlot) {
+        core->devicecontext->PSSetSamplers(startSlot, 1, &state);
     }
 };
 
@@ -107,6 +104,7 @@ public:
         Texture* texture = new Texture();
         texture->load(core, filename);
         textures.insert({ filename, texture });
+
     }
     ID3D11ShaderResourceView* find(std::string name)
     {

@@ -104,6 +104,8 @@ public:
 				vertices.push_back(v);
 			}
 			textureFilenames.push_back(gemmeshes[i].material.find("diffuse").getValue());
+			textureFilenames.push_back(gemmeshes[i].material.find("normals").getValue());
+			//debugLog("tex name: (" + gemmeshes[i].material.find("normals").getValue() + ")----------------------");
 			// Load texture with filename: gemmeshes[i].material.find("diffuse").getValue()
 			mesh.init_static(core, vertices, gemmeshes[i].indices);
 
@@ -111,10 +113,14 @@ public:
 		}
 	}
 
-	void draw(DXcore* core, TextureManager* textures, Shader* shader) {
+	void bindTexture(DXcore* core, TextureManager* textures, Shader* shader, int startSlot) {//string texTypeName) {
+			shader->updateTexturePS(core, 0, textures->find(textureFilenames[startSlot * 2]));
+			shader->updateTexturePS(core, 1, textures->find(textureFilenames[startSlot * 2 + 1]));
+	}
+
+	void draw(DXcore* core) {
 		for (int i = 0; i < meshes.size(); i++)
 		{
-			shader->updateTexturePS(core, "tex", textures->find(textureFilenames[i]));
 			meshes[i].draw(core);
 		}
 	}
@@ -145,7 +151,10 @@ public:
 			}
 			//path
 			textureFilenames.push_back(gemmeshes[i].material.find("diffuse").getValue());
+			textureFilenames.push_back(gemmeshes[i].material.find("normals").getValue());
 			// Load texture with filename: gemmeshes[i].material.find("diffuse").getValue()
+			//debugLog("tex name: (" + gemmeshes[i].material.find("diffuse").getValue() + ")----------------------");
+			
 			mesh.init_animated(core, vertices, gemmeshes[i].indices);
 			meshes.push_back(mesh);
 		}
@@ -168,7 +177,7 @@ public:
 		{
 			std::string name = gemanimation.animations[i].name;
 
-			debugLog("anim name: (" + name + ")");//---------------------------------debug------------------------------------
+			//debugLog("anim name: (" + name + ")");//---------------------------------debug------------------------------------
 
 			AnimationSequence aseq;
 			aseq.ticksPerSecond = gemanimation.animations[i].ticksPerSecond;
@@ -193,10 +202,30 @@ public:
 		}
 	}
 
-	void draw(DXcore* core, TextureManager* textures, Shader* shader) {
+	void bindTexture(DXcore* core, TextureManager* textures, Shader* shader, UINT startSlot){//string texTypeName) {
 		for (int i = 0; i < meshes.size(); i++)
 		{
-			shader->updateTexturePS(core, "tex", textures->find(textureFilenames[i]));
+			//shader->updateTexturePS(core, texTypeName, textures->find(textureFilenames[i]));
+			if (startSlot == 0) {
+				shader->updateTexturePS(core, startSlot, textures->find(textureFilenames[i]));
+				//debugLog("diffuse name: (" + textureFilenames[i] + ")----------------------");
+			}
+			else if (startSlot == 1) {
+				shader->updateTexturePS(core, startSlot, textures->find(textureFilenames[i+1]));
+				//debugLog("normal name: (" + textureFilenames[i] + ")----------------------");
+			}
+			
+		}
+		//for (int i = 0; i < textureFilenames.size(); i++) {
+		//	
+		//	debugLog("tex name: (" + textureFilenames[i] + ")----------------------");
+		//}
+		//debugLog("---------------------------------");
+	}
+
+	void draw(DXcore* core) {
+		for (int i = 0; i < meshes.size(); i++)
+		{
 			meshes[i].draw(core);
 		}
 	}
@@ -236,7 +265,7 @@ public:
 
 	}
 	void draw(DXcore* core, TextureManager* textures, Shader* shader, std::string name) {
-		shader->updateTexturePS(core, "tex", textures->find(name));
+		shader->updateTexturePS(core, 0, textures->find(name)); //"tex"
 		mesh.draw(core);
 	}
 };

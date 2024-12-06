@@ -40,14 +40,20 @@ public:
 	Vec3 position;
 	int num = 10;
 	float timer = 0.f;
-	Foliage(DXcore* core, std::string VertexSHaderName, std::string gemName, std::string texName1, std::string texName2, std::string texName3, Vec3 _position, Vec3 scale, int _num) {
+	Foliage(DXcore* core, std::string VertexSHaderName, std::string gemName, std::string texName1, std::string texName2, std::string texName3, 
+		std::string normalName1, std::string normalName2, std::string normalName3, Vec3 _position, Vec3 scale, int _num) {
 		shader.init(VertexSHaderName, "Shaders/PixelShader.txt", core);
 		model.init(gemName, core);
 		position = _position;
 		num = _num;
+		
 		textures.load(core, texName1);
 		textures.load(core, texName2);
 		textures.load(core, texName3);
+		textures.load(core, normalName1);
+		textures.load(core, normalName2);
+		textures.load(core, normalName3);
+
 		for (int i = 0; i < num; i++) {
 			int seedX = rand() % 70;
 			int seedZ = rand() % 90;
@@ -63,8 +69,12 @@ public:
 			shader.updateConstantVS("StaticModel", "staticMeshBuffer", "VP", &vp);
 			shader.updateConstantVS("StaticModel", "staticMeshBuffer", "time", &timer);
 
-			shader.apply(core);
-			model.draw(core, &textures, &shader);
+			for (int meshIndex = 0; meshIndex < model.meshes.size(); meshIndex++) {
+				// bind texture to t0 and t1
+				model.bindTexture(core, &textures, &shader, meshIndex);
+				shader.apply(core);
+				model.meshes[meshIndex].draw(core);
+			}
 		}
 	}
 };
@@ -99,6 +109,7 @@ public:
 		animationInstance.currentAnimation = "Idle";
 		// load texture
 		textures.load(core, "Textures/T-rex_Base_Color.png");
+		textures.load(core, "Textures/T-rex_Normal_OpenGL.png");
 	}
 
 	void checkInsideAggroRange(Vec3 playerPos) {
@@ -124,15 +135,19 @@ public:
 		shader.updateConstantVS("Animated", "staticMeshBuffer", "W", &worldMatrix);
 		shader.updateConstantVS("Animated", "staticMeshBuffer", "VP", &vp);
 
+		// bind texture to t0 and t1: t0 for diffuse, t1 for normal map
+		model.bindTexture(core, &textures, &shader, 0);
+		model.bindTexture(core, &textures, &shader, 1);
+
 		shader.apply(core);
-		model.draw(core, &textures, &shader);
+		model.draw(core);
 	}
 
 };
 
 class Player : public NPC {
 public:
-	Player(DXcore* core) {
+	Player(DXcore* core, Sampler* sampler) {
 		position = Vec3(0, 0, 20);
 
 		shader.init("Shaders/VertexShader_anim.txt", "Shaders/PixelShader.txt", core);
@@ -145,6 +160,8 @@ public:
 		// load texture
 		textures.load(core, "Textures/MaleDuty_3_OBJ_Happy_Packed0_Diffuse.png");
 		textures.load(core, "Textures/MaleDuty_3_OBJ_Serious_Packed0_Diffuse.png");
+		textures.load(core, "Textures/MaleDuty_3_OBJ_Happy_Packed0_Normal.png");
+		textures.load(core, "Textures/MaleDuty_3_OBJ_Serious_Packed0_Normal.png");
 	}
 
 	void updatePos(Vec3 camPos) {
