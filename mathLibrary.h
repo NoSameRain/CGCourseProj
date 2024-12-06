@@ -218,12 +218,12 @@ public:
 		return mul(matrix);
 	}
 
-	static Matrix worldMatrix(const Vec3& v_t, const Vec3& v_s, float theta_x, float theta_y, float theta_z) {
+	static Matrix worldMatrix(const Vec3& v_t, const Vec3& v_s, const Vec3& v_r) {
 		Matrix translation = translation.translation(v_t);
 		Matrix scaling = scaling.scaling(v_s);
-		Matrix rotateX = rotateX.rotateX(theta_x);
-		Matrix rotateY = rotateY.rotateY(theta_y);
-		Matrix rotateZ = rotateZ.rotateZ(theta_z);
+		Matrix rotateX = rotateX.rotateX(v_r.x);
+		Matrix rotateY = rotateY.rotateY(v_r.y);
+		Matrix rotateZ = rotateZ.rotateZ(v_r.z);
 		Matrix rotation = rotateX * rotateY * rotateZ;
 		return(scaling * rotation * translation);
 		//return (translation* rotation* scaling);

@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +140,7 @@
     <ClInclude Include="Device.h" />
     <ClInclude Include="GamesEngineeringBase.h" />
     <ClInclude Include="GEMLoader.h" />
+    <ClInclude Include="levelManager.h" />
     <ClInclude Include="mathLibrary.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="GameObject.h" />
@@ -146,6 +148,7 @@
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Utils.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

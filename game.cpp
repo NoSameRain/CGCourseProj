@@ -7,6 +7,7 @@
 #include "GamesEngineeringBase.h"
 #include "Camera.h"
 #include "GameObject.h"
+#include "levelManager.h"
 
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow) 
 {
@@ -15,6 +16,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 	DXcore core;
 	GamesEngineeringBase::Timer timer;
 	Sampler sampler;
+	LevelManager levelManager;
 
 	float WIDTH = 1024.f;
 	float HEIGHT = 1024.f;
@@ -35,9 +37,9 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		"Textures/bark09_normal.png", "Textures/stump01_normal.png", "Textures/pine branch_Normal.png",  Vec3(-45,0,-40), Vec3(0.05, 0.05, 0.05), 30);
 	Foliage flower(&core, "Shaders/VertexShader_grass.txt", "Models/flower1.gem", "Textures/flower daisy.png", "Textures/plant05.png", "Textures/daisy leaf.png",
 		"Textures/flower daisy_Normal.png", "Textures/plant05_Normal.png", "Textures/daisy leaf_Normal.png", Vec3(-30, 0, -20), Vec3(0.08, 0.08, 0.08), 50);
-	NPC npc(&core);
-	Ground ground(&core);
-	Player player(&core);
+	NPC npc(&core, Vec3(0, 0, 0), Vec3(2, 2, 2));
+	Ground ground(&core, Vec3(0, 0, 0), Vec3(6, 1, 6));
+	Player player(&core, Vec3(0, 0, 20), Vec3(0.06, 0.06, 0.06));
 	
 	// bind sampler to s0 and s1: s0 for diffuse, s1 for normal map
 	sampler.bind(&core, 0);
@@ -61,6 +63,14 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		camera.updateTranslation(dt, window);
 		view = camera.getLookAtMat();
 		vp =  view * projection;
+		                                                                    
+		// load and save data from custom file
+		if (window.keys['O']) {
+			levelManager.saveLevelData(ground, pine, flower, npc, player);
+		}
+		if (window.keys['L']) {
+			levelManager.loadLevelData(&core, ground, pine, flower, npc, player);
+		}
 
 		//------------------------------------------DRAW------------------------------------------------
 		
