@@ -15,8 +15,8 @@ struct PS_INPUT
 float4 PS(PS_INPUT input) : SV_Target0
 {
 	//float3 lightDir = normalize(float3(cos(time * 0.5), sin(time * 0.5), sin(time * 0.3)));
-	float3 lightDir = normalize(float3(1,-1,1));
-	float3 lightColour = float3(3,1,0); // warm orange color
+	float3 lightDir = normalize(float3(-1,1,1));
+	float3 lightColour = float3(3.6,3.6,3.6); 
 	float3 ambient = float3(1,1,1);
 	
 	// normal mapping
@@ -28,7 +28,7 @@ float4 PS(PS_INPUT input) : SV_Target0
 	float3 mapNormal = normalsTexture.Sample(normalSampler, input.TexCoords).xyz;
 	
 	mapNormal = mapNormal * 2.0 - 1.0;
-	mapNormal = normalize(mapNormal * 2.0);
+	//mapNormal = normalize(mapNormal * 2.0);
 
 	float3 localLightDir = mul(lightDir, transpose(TBN));
 

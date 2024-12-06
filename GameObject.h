@@ -18,18 +18,26 @@ public:
 class Ground :public GameObject {
 public:
 	Plane plane;
+	std::string diffuseTex, normalTex;
 	Ground(DXcore* core) {
-		shader.init("Shaders/VertexShader_static.txt", "Shaders/PixelShader_ground.txt", core);
+		shader.init("Shaders/VertexShader_static.txt", "Shaders/PixelShader.txt", core);
 		plane.init(core);
 		worldMatrix = Matrix::worldMatrix(Vec3(0, 0, 0), Vec3(6, 1, 6), 0, 0, 0);
+		diffuseTex = "Textures/plant05.png";
+		normalTex = "Textures/plant05_Normal.png";
+		textures.load(core, diffuseTex);
+		textures.load(core, normalTex);
 	}
 
 	void draw(DXcore* core, Matrix& vp) {
 		shader.updateConstantVS("StaticModel", "staticMeshBuffer", "W", &worldMatrix);
 		shader.updateConstantVS("StaticModel", "staticMeshBuffer", "VP", &vp);
 
+		// bind texture to t0 and t1
+		plane.bindTexture(core, &textures, &shader, diffuseTex, normalTex);
 		shader.apply(core);
 		plane.mesh.draw(core);
+
 	}
 };
 
@@ -147,7 +155,7 @@ public:
 
 class Player : public NPC {
 public:
-	Player(DXcore* core, Sampler* sampler) {
+	Player(DXcore* core) {
 		position = Vec3(0, 0, 20);
 
 		shader.init("Shaders/VertexShader_anim.txt", "Shaders/PixelShader.txt", core);

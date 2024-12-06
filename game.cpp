@@ -37,7 +37,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		"Textures/flower daisy_Normal.png", "Textures/plant05_Normal.png", "Textures/daisy leaf_Normal.png", Vec3(-30, 0, -20), Vec3(0.08, 0.08, 0.08), 50);
 	NPC npc(&core);
 	Ground ground(&core);
-	Player player(&core, &sampler);
+	Player player(&core);
 	
 	// bind sampler to s0 and s1: s0 for diffuse, s1 for normal map
 	sampler.bind(&core, 0);

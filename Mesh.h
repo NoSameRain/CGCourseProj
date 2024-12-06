@@ -113,9 +113,9 @@ public:
 		}
 	}
 
-	void bindTexture(DXcore* core, TextureManager* textures, Shader* shader, int startSlot) {//string texTypeName) {
-			shader->updateTexturePS(core, 0, textures->find(textureFilenames[startSlot * 2]));
-			shader->updateTexturePS(core, 1, textures->find(textureFilenames[startSlot * 2 + 1]));
+	void bindTexture(DXcore* core, TextureManager* textures, Shader* shader, int index) {//string texTypeName) {
+			shader->updateTexturePS(core, 0, textures->find(textureFilenames[index * 2]));
+			shader->updateTexturePS(core, 1, textures->find(textureFilenames[index * 2 + 1]));
 	}
 
 	void draw(DXcore* core) {
@@ -132,7 +132,7 @@ public:
 	std::vector<Mesh> meshes;
 	Animation animation;
 	std::vector<std::string> textureFilenames;
-	TextureManager textures;
+	//TextureManager textures;
 
 	void init(std::string filename, DXcore* core) {
 		GEMLoader::GEMModelLoader loader;
@@ -235,7 +235,7 @@ public:
 class Plane {
 public:
 	Mesh mesh;
-	TextureManager textures;
+	//TextureManager textures;
 	STATIC_VERTEX addVertex(Vec3 p, Vec3 n, float tu, float tv)
 	{
 		STATIC_VERTEX v;
@@ -262,6 +262,20 @@ public:
 
 		mesh.init_static(core, vertices, indices);
 
+
+	}
+
+	void bindTexture(DXcore* core, TextureManager* textures, Shader* shader, std::string nameD, std::string nameN) {
+		//shader->updateTexturePS(core, 0, textures->textures[nameD]->srv);
+		//shader->updateTexturePS(core, 0, textures->textures[nameN]->srv);
+		shader->updateTexturePS(core, 0, textures->find(nameD));
+		shader->updateTexturePS(core, 1, textures->find(nameN));
+		if (!textures->find(nameD)) {
+			debugLog("Failed to find albedo texture");
+		}
+		if (!textures->find(nameN)) {
+			debugLog("Failed to find normal texture");
+		}
 
 	}
 	void draw(DXcore* core, TextureManager* textures, Shader* shader, std::string name) {
