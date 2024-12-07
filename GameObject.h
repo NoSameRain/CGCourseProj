@@ -30,9 +30,36 @@ public:
 	Vec3 scale;
 
 	std::vector<std::string> diffusePath, normalPath;
+	std::string gemPath;
 	
 	GameObject(){}
 
+};
+
+class Ground :public GameObject {
+public:
+	Plane plane;
+	Ground(DXcore* core, const Vec3 _position, const Vec3 _scale) {
+		position = _position;
+		scale = _scale;
+		shader.init("Shaders/VertexShader_static.txt", "Shaders/PixelShader.txt", core);
+		plane.init(core);
+		worldMatrix = Matrix::worldMatrix(position, scale,Vec3(0,0,0) );
+		diffusePath.push_back("Textures/Grass001_1K-PNG_Color.png"); 
+		normalPath.push_back("Textures/Grass001_1K-PNG_NormalDX.png");
+		textures.load(core, diffusePath[0]);
+		textures.load(core, normalPath[0]);
+	}
+
+	void draw(DXcore* core, Matrix& vp) {
+		shader.updateConstantVS("StaticModel", "staticMeshBuffer", "W", &worldMatrix);
+		shader.updateConstantVS("StaticModel", "staticMeshBuffer", "VP", &vp);
+
+		// bind texture to t0 and t1
+		plane.bindTexture(core, &textures, &shader, diffusePath[0], normalPath[0]);
+		shader.apply(core);
+		plane.mesh.draw(core);
+	}
 	void saveDatatoFile(ofstream& outfile) {
 		// position, scale
 		outfile.write(reinterpret_cast<const char*>(&position), sizeof(Vec3));
@@ -64,22 +91,19 @@ public:
 		}
 		// shader? plane?
 	}
-	
 };
 
-class Ground :public GameObject {
-public:
-	Plane plane;
-	Ground(DXcore* core, const Vec3 _position, const Vec3 _scale) {
+class SkyBox :public GameObject {
+public:	
+	Sphere sphere;
+	float timer = 0.f;
+	SkyBox(DXcore* core, const Vec3 _position, const Vec3 _scale) {
 		position = _position;
 		scale = _scale;
-		shader.init("Shaders/VertexShader_static.txt", "Shaders/PixelShader.txt", core);
-		plane.init(core);
-		worldMatrix = Matrix::worldMatrix(position, scale,Vec3(0,0,0) );
-		diffusePath.push_back("Textures/plant05.png"); 
-		normalPath.push_back("Textures/plant05_Normal.png");
-		textures.load(core, diffusePath[0]);
-		textures.load(core, normalPath[0]);
+		shader.init("Shaders/VertexShader_static.txt", "Shaders/PixelShader_albedo.txt", core);
+		sphere.init(core);
+		worldMatrix = Matrix::worldMatrix(position, scale, Vec3(0, 0, M_PI));
+		textures.load(core, "Textures/kloppenheim_06_puresky.png");
 	}
 
 	void draw(DXcore* core, Matrix& vp) {
@@ -87,38 +111,37 @@ public:
 		shader.updateConstantVS("StaticModel", "staticMeshBuffer", "VP", &vp);
 
 		// bind texture to t0 and t1
-		plane.bindTexture(core, &textures, &shader, diffusePath[0], normalPath[0]);
+		sphere.bindTexture(core, &textures, &shader, "Textures/kloppenheim_06_puresky.png");
 		shader.apply(core);
-		plane.mesh.draw(core);
+		sphere.mesh.draw(core);
 	}
 };
 
 class Foliage : public GameObject {
 public:	
 	Model_static model;
+	std::vector<Vec3> positions;
 	std::vector<Matrix> worldMatrices;
-	int num = 10;
+	int num;
 	float timer = 0.f;
-	Foliage(DXcore* core, std::string VertexSHaderName, std::string gemName, std::string texName1, std::string texName2, std::string texName3, 
-		std::string normalName1, std::string normalName2, std::string normalName3, Vec3 _position, Vec3 _scale, int _num) {
+	Foliage(DXcore* core, std::string VertexSHaderName, std::string gemName, const std::vector<std::string>& texturePaths, Vec3 _position, Vec3 _scale, int _num) {
+		gemPath = gemName;
 		shader.init(VertexSHaderName, "Shaders/PixelShader.txt", core);
-		model.init(gemName, core);
+		model.init(gemPath, core);
 		position = _position;
 		scale = _scale;
 		num = _num;
 		
-		textures.load(core, texName1);
-		textures.load(core, texName2);
-		textures.load(core, texName3);
-		textures.load(core, normalName1);
-		textures.load(core, normalName2);
-		textures.load(core, normalName3);
+		for (const auto& texPath : texturePaths) {
+			textures.load(core, texPath);
+		}
 
 		for (int i = 0; i < num; i++) {
-			int seedX = rand() % 70;
-			int seedZ = rand() % 90;
-			Vec3 v = position + Vec3(seedX, 0, seedZ);
-			worldMatrices.push_back(Matrix::worldMatrix(v, scale, Vec3(0,0,0)));
+			int seedX = rand() % 140;
+			int seedZ = rand() % 120;
+			Vec3 pos = position + Vec3(seedX, 0, seedZ);
+			positions.push_back(pos);
+			worldMatrices.push_back(Matrix::worldMatrix(pos, scale, Vec3(0,0,0)));
 		}
 	}
 
@@ -136,6 +159,57 @@ public:
 				model.meshes[meshIndex].draw(core);
 			}
 		}
+	}
+
+	void saveDatatoFile(ofstream& outfile) {
+		// number of foliage
+		outfile.write(reinterpret_cast<const char*>(&num), sizeof(int));
+		// position, scale
+		for (auto& pos : positions) {
+			outfile.write(reinterpret_cast<const char*>(&pos), sizeof(Vec3));
+		}
+		outfile.write(reinterpret_cast<const char*>(&scale), sizeof(Vec3));
+		// mesh
+		//writeStringToFile(outfile, gemPath);
+		// texture: diffus, normal
+		for (auto& path : diffusePath) {
+			writeStringToFile(outfile, path);
+		}
+		for (auto& path : normalPath) {
+			writeStringToFile(outfile, path);
+		}
+		
+		
+	}
+
+	void loadDataFromFile(DXcore* core, ifstream& infile) {
+		// number of foliage
+		infile.read(reinterpret_cast<char*>(&num), sizeof(int));
+		// position, scale
+		positions.clear();
+		Vec3 pos;
+		while (infile.read(reinterpret_cast<char*>(&pos), sizeof(Vec3))) {
+			positions.push_back(pos);
+		}
+		infile.read(reinterpret_cast<char*>(&scale), sizeof(Vec3));
+		// worldMatrix
+		worldMatrices.clear();
+		for (int i = 0; i < num; i++) {
+			worldMatrices.push_back(Matrix::worldMatrix(positions[i], scale, Vec3(0, 0, 0)));
+		}
+		// mesh
+		//readStringfromFile(infile, gemPath);
+		//model.init(gemPath, core);
+		// texture: diffus, normal
+		for (auto& path : diffusePath) {
+			readStringfromFile(infile, path);
+			textures.load(core, path);
+		}
+		for (auto& path : normalPath) {
+			readStringfromFile(infile, path);
+			textures.load(core, path);
+		}
+		
 	}
 
 };
@@ -162,9 +236,10 @@ public:
 		attackRange = 16.f;
 		insideAggroRange = false;
 		insideAttackRange = false;
+		gemPath = "Models/TRex.gem";
 
 		shader.init("Shaders/VertexShader_anim.txt", "Shaders/PixelShader.txt", core);
-		model.init("Models/TRex.gem", core);
+		model.init(gemPath, core);
 		worldMatrix = Matrix::worldMatrix(position, scale, Vec3(0,0,0));
 		// initialize animation instance
 		animationInstance.animation = &model.animation;
@@ -204,6 +279,49 @@ public:
 		shader.apply(core);
 		model.draw(core);
 	}
+	void saveDatatoFile(ofstream& outfile) {
+		// position, scale
+		outfile.write(reinterpret_cast<const char*>(&position), sizeof(Vec3));
+		outfile.write(reinterpret_cast<const char*>(&scale), sizeof(Vec3));
+		// mesh
+		//writeStringToFile(outfile, gemPath);
+
+		// texture: diffus, normal
+		for (auto& path : diffusePath) {
+			writeStringToFile(outfile, path);
+		}
+		for (auto& path : normalPath) {
+			writeStringToFile(outfile, path);
+		}
+		// bool
+		outfile.write(reinterpret_cast<const char*>(&insideAggroRange), sizeof(bool));
+		outfile.write(reinterpret_cast<const char*>(&insideAttackRange), sizeof(bool));
+		// mesh
+		writeStringToFile(outfile, gemPath);
+	}
+
+	void loadDataFromFile(DXcore* core, ifstream& infile) {
+		// position, scale
+		infile.read(reinterpret_cast<char*>(&position), sizeof(Vec3));
+		infile.read(reinterpret_cast<char*>(&scale), sizeof(Vec3));
+		// worldMatrix
+		worldMatrix = Matrix::worldMatrix(position, scale, Vec3(0, 0, 0));
+		// mesh
+		//readStringfromFile(infile, gemPath);
+		//model.init(gemPath, core);
+		// texture: diffus, normal
+		for (auto& path : diffusePath) {
+			readStringfromFile(infile, path);
+			textures.load(core, path);
+		}
+		for (auto& path : normalPath) {
+			readStringfromFile(infile, path);
+			textures.load(core, path);
+		}
+		// bool
+		infile.read(reinterpret_cast<char*>(&insideAggroRange), sizeof(bool));
+		infile.read(reinterpret_cast<char*>(&insideAttackRange), sizeof(bool));
+	}
 
 };
 
@@ -238,4 +356,5 @@ public:
 		//animationInstance.update(animController.stateToString(), dt);
 		animationInstance.update("rifle aiming idle", dt);
 	}
+
 };

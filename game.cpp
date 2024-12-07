@@ -33,12 +33,28 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 	// initialize sampler
 	sampler.init(&core);
 	// initaiize gameObect
-	Foliage pine(&core, "Shaders/VertexShader_static.txt", "Models/pine.gem", "Textures/bark09.png", "Textures/stump01.png", "Textures/pine branch.png",
-		"Textures/bark09_normal.png", "Textures/stump01_normal.png", "Textures/pine branch_Normal.png",  Vec3(-45,0,-40), Vec3(0.05, 0.05, 0.05), 30);
-	Foliage flower(&core, "Shaders/VertexShader_grass.txt", "Models/flower1.gem", "Textures/flower daisy.png", "Textures/plant05.png", "Textures/daisy leaf.png",
-		"Textures/flower daisy_Normal.png", "Textures/plant05_Normal.png", "Textures/daisy leaf_Normal.png", Vec3(-30, 0, -20), Vec3(0.08, 0.08, 0.08), 50);
-	NPC npc(&core, Vec3(0, 0, 0), Vec3(2, 2, 2));
-	Ground ground(&core, Vec3(0, 0, 0), Vec3(6, 1, 6));
+	
+	std::vector<std::string> treeTextures = {
+	"Textures/bark07.png",
+	"Textures/fir branch.png",
+	"Textures/bark07_Normal.png",
+	"Textures/fir branch_Normal.png"
+	};
+	Foliage pine(&core, "Shaders/VertexShader_static.txt", "Models/pine1.gem", treeTextures,  Vec3(-80,0,-70), Vec3(0.05, 0.05, 0.05), 23);
+	
+	std::vector<std::string> flowerTextures = {
+	"Textures/flower daisy.png",
+	"Textures/plant05.png",
+	"Textures/daisy leaf.png",
+	"Textures/flower daisy_Normal.png",
+	"Textures/plant05_Normal.png",
+	"Textures/daisy leaf_Normal.png"
+	};
+	Foliage flower(&core, "Shaders/VertexShader_grass.txt", "Models/flower1.gem", flowerTextures, Vec3(-60, 0, -60), Vec3(0.08, 0.08, 0.08), 50);
+	
+	NPC npc(&core, Vec3(0, 0, -10), Vec3(2, 2, 2));
+	Ground ground(&core, Vec3(0, 0, 0), Vec3(8, 1, 8));
+	SkyBox skyBox(&core, Vec3(0, 0, 0), Vec3(1, 1, 1));
 	Player player(&core, Vec3(0, 0, 20), Vec3(0.06, 0.06, 0.06));
 	
 	// bind sampler to s0 and s1: s0 for diffuse, s1 for normal map
@@ -54,8 +70,6 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		}
 
 		float dt = timer.dt();
-
-		
 
 		//------------------------------------------CAMERA----------------------------------------------
 		// update camera -- first personal view
@@ -76,6 +90,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		
 		// draw ground
 		ground.draw(&core, vp);
+		// draw sky box
+		skyBox.draw(&core, vp);
 		// draw foliage
 		pine.draw(&core,vp,dt);
 		flower.draw(&core, vp,dt);

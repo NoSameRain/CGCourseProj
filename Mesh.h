@@ -98,7 +98,7 @@ public:
 			}
 			textureFilenames.push_back(gemmeshes[i].material.find("diffuse").getValue());
 			textureFilenames.push_back(gemmeshes[i].material.find("normals").getValue());
-			//debugLog("tex name: (" + gemmeshes[i].material.find("normals").getValue() + ")----------------------");
+			//debugLog("tex name: (" + gemmeshes[i].material.find("diffuse").getValue() + ")----------------------");
 			// Load texture with filename: gemmeshes[i].material.find("diffuse").getValue()
 			mesh.init_static(core, vertices, gemmeshes[i].indices);
 
@@ -271,10 +271,6 @@ public:
 		}
 
 	}
-	void draw(DXcore* core, TextureManager* textures, Shader* shader, std::string name) {
-		shader->updateTexturePS(core, 0, textures->find(name)); //"tex"
-		mesh.draw(core);
-	}
 };
 
 class Cube {
@@ -372,9 +368,9 @@ public:
 	}
 
 	void init(DXcore* core) {
-		int rings = 10;
-		int segments = 10;
-		float radius = 10.f;
+		int rings = 90;
+		int segments = 90;
+		float radius = 180.f;
 		std::vector<STATIC_VERTEX> vertices;
 		for (int lat = 0; lat <= rings; lat++) {
 			float theta = lat * 3.14159265358979323846f / rings;
@@ -408,5 +404,12 @@ public:
 		}
 		mesh.init_static(core, vertices, indices);
 	}
+	void bindTexture(DXcore* core, TextureManager* textures, Shader* shader, std::string nameD) {
+		//shader->updateTexturePS(core, 0, textures->find(nameD)); textures[name]->srv
+		shader->updateTexturePS(core, 0, textures->textures[nameD]->srv);
+		if (textures->textures[nameD]->srv == nullptr) {
+			debugLog("Failed to find albedo texture: " + nameD);
+		}
 
+	}
 };

@@ -11,7 +11,7 @@
 #define M_PI       3.14159265358979323846
 
 const float _near = 0.1;
-const float _far = 100;
+const float _far = 300;
 
 template<typename T>
 static T lerp(const T a, const T b, float t)

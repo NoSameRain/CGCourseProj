@@ -2,6 +2,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include"Device.h"
+#include"Utils.h"
 #include <map>
 
 class Texture {
@@ -54,12 +55,14 @@ public:
                 texelsWithAlpha[(i * 4) + 3] = 255;
             }
             // Initialize texture using width, height, channels, and texelsWithAlpha
+            init(core, width, height, 4, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, texelsWithAlpha);
             delete[] texelsWithAlpha;
         }
         else {
             // Initialize texture using width, height, channels, and texels
             init(core, width, height, channels, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, texels);
         }
+
         stbi_image_free(texels);
 	}
 
@@ -99,6 +102,7 @@ public:
         std::map<std::string, Texture*>::iterator it = textures.find(filename);
         if (it != textures.end())
         {
+            //debugLog("has found tex name: (" + filename + ")----------------------");
             return;
         }
         Texture* texture = new Texture();

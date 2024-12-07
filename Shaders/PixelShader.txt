@@ -16,8 +16,8 @@ float4 PS(PS_INPUT input) : SV_Target0
 {
 	//float3 lightDir = normalize(float3(cos(time * 0.5), sin(time * 0.5), sin(time * 0.3)));
 	float3 lightDir = normalize(float3(-1,1,1));
-	float3 lightColour = float3(3.6,3.6,3.6); 
-	float3 ambient = float3(1,1,1);
+	float3 lightColour = float3(4,4,4); 
+	float3 ambient = float3(1.5,1.5,1.4);
 	
 	// normal mapping
 	float3 normal = normalize(input.Normal);
@@ -28,7 +28,7 @@ float4 PS(PS_INPUT input) : SV_Target0
 	float3 mapNormal = normalsTexture.Sample(normalSampler, input.TexCoords).xyz;
 	
 	mapNormal = mapNormal * 2.0 - 1.0;
-	//mapNormal = normalize(mapNormal * 2.0);
+	mapNormal = normalize(mapNormal * 2.0);
 
 	float3 localLightDir = mul(lightDir, transpose(TBN));
 
@@ -42,6 +42,5 @@ float4 PS(PS_INPUT input) : SV_Target0
 	float3 diffuse = (albedo.rgb / PI) * (lightColour * max(dot(mapNormal, localLightDir), 0.0) + ambient );
 
 	return float4(diffuse.rgb, 1.0);
-	//return float4(mapNormal * 0.5 + 0.5, 1.0);
 
 }

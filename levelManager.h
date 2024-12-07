@@ -20,23 +20,11 @@ public:
             debugLog("can not open outfile");
             return;
         }
-
-        // ground
         ground.saveDatatoFile(outfile);
-
-        // （2）
-        //for (const auto& foliage : foliages) {
-        //    Vec3 pos = foliage.position;
-        //    Vec3 scale = foliage.scale;
-        //    outfile.write(reinterpret_cast<const char*>(&pos), sizeof(Vec3));
-        //    outfile.write(reinterpret_cast<const char*>(&scale), sizeof(Vec3));
-        //    // 保存材质路径
-        //    for (const std::string& texPath : foliage.textures) {
-        //        size_t texPathLength = texPath.size();
-        //        outfile.write(reinterpret_cast<const char*>(&texPathLength), sizeof(size_t));
-        //        outfile.write(texPath.c_str(), texPathLength);
-        //    }
-        //}
+        //pine.saveDatatoFile(outfile);
+        flower.saveDatatoFile(outfile);
+        npc.saveDatatoFile(outfile);
+        player.saveDatatoFile(outfile);
 
         outfile.close();
         debugLog("level saved succesfully!");
@@ -50,52 +38,11 @@ public:
 
         // ground
         ground.loadDataFromFile(core, infile);
-
-        // 加载 Ground 对象信息
-        //Vec3 position, scale;
-        //infile.read(reinterpret_cast<char*>(&position), sizeof(Vec3));
-        //infile.read(reinterpret_cast<char*>(&scale), sizeof(Vec3));
-        //ground.worldMatrix = Matrix::worldMatrix(position, scale, 0, 0, 0);
-
-        //size_t diffuseLength, normalLength;
-        //infile.read(reinterpret_cast<char*>(&diffuseLength), sizeof(size_t));
-        //char* diffusePath = new char[diffuseLength + 1];
-        //infile.read(diffusePath, diffuseLength);
-        //diffusePath[diffuseLength] = '\0';
-        //ground.diffuseTex = std::string(diffusePath);
-        //delete[] diffusePath;
-
-        //infile.read(reinterpret_cast<char*>(&normalLength), sizeof(size_t));
-        //char* normalPath = new char[normalLength + 1];
-        //infile.read(normalPath, normalLength);
-        //normalPath[normalLength] = '\0';
-        //ground.normalTex = std::string(normalPath);
-        //delete[] normalPath;
-
-        //ground.textures.load(core, ground.diffuseTex);
-        //ground.textures.load(core, ground.normalTex);
-
-        //// 加载其他对象 (如 Foliage)
-        //for (auto& foliage : foliages) {
-        //    Vec3 pos, scale;
-        //    infile.read(reinterpret_cast<char*>(&pos), sizeof(Vec3));
-        //    infile.read(reinterpret_cast<char*>(&scale), sizeof(Vec3));
-        //    foliage.position = pos;
-        //    foliage.scale = scale;
-
-        //    for (std::string& texPath : foliage.textures) {
-        //        size_t texPathLength;
-        //        infile.read(reinterpret_cast<char*>(&texPathLength), sizeof(size_t));
-        //        char* texPathBuffer = new char[texPathLength + 1];
-        //        infile.read(texPathBuffer, texPathLength);
-        //        texPathBuffer[texPathLength] = '\0';
-        //        texPath = std::string(texPathBuffer);
-        //        delete[] texPathBuffer;
-
-        //        foliage.textures.load(core, texPath);
-        //    }
-        //}
-
+        //pine.loadDataFromFile(core, infile);
+        flower.loadDataFromFile(core, infile);
+        npc.loadDataFromFile(core, infile);
+        player.loadDataFromFile(core, infile);
+        
         infile.close();
         debugLog("level loaded succesfully!");
     }
