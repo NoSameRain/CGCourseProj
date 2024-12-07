@@ -1,15 +1,8 @@
 ﻿#pragma once
 #include <fstream>
-#include "Window.h"
-#include "Device.h"
-#include "Adapter.h"
-#include "Shaders.h"
-#include "Mesh.h"
-#include "mathLibrary.h"
-#include "GamesEngineeringBase.h"
 #include "Camera.h"
 #include "GameObject.h"
-#include"Utils.h"
+#include "Utils.h"
 
 class LevelManager {
 public:

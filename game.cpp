@@ -1,13 +1,18 @@
 #include "Window.h"
 #include "Device.h"
 #include "Adapter.h"
-#include "Shaders.h"
 #include "Mesh.h"
 #include "mathLibrary.h"
 #include "GamesEngineeringBase.h"
 #include "Camera.h"
 #include "GameObject.h"
 #include "levelManager.h"
+#include "Collision.h"
+#include "CollisionDetection.h"
+
+extern "C" {
+	__declspec(dllexport) extern DWORD NvOptimusEnablement;
+}
 
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow) 
 {
@@ -17,6 +22,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 	GamesEngineeringBase::Timer timer;
 	Sampler sampler;
 	LevelManager levelManager;
+
+	bool ifCollided = false;
 
 	float WIDTH = 1024.f;
 	float HEIGHT = 1024.f;
@@ -40,7 +47,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 	"Textures/bark07_Normal.png",
 	"Textures/fir branch_Normal.png"
 	};
-	Foliage pine(&core, "Shaders/VertexShader_static.txt", "Models/pine1.gem", treeTextures,  Vec3(-80,0,-70), Vec3(0.05, 0.05, 0.05), 23);
+	Tree pine(&core, "Shaders/VertexShader_static.txt", "Models/pine1.gem", treeTextures,  Vec3(-80,0,-70), Vec3(0.05, 0.05, 0.05), 23);
 	
 	std::vector<std::string> flowerTextures = {
 	"Textures/flower daisy.png",
@@ -98,8 +105,11 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		// draw npc
 		npc.updateAnimationInstance(dt, camera.position);
 		npc.draw(&core, vp);
+		// collision detection: only detect tree and npc here
+		ifCollided = collisionDetectionTree(player, pine) && collisionDetection(player, npc);
 		// draw player
-		player.updatePos(camera.position);
+		// update player position based on camera position
+		player.updatePos(camera.position, pine, ifCollided);
 		player.updateAnimationInstance(dt);
 		player.draw(&core, vp);
 

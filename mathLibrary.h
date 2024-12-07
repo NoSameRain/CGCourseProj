@@ -1,7 +1,6 @@
 ﻿#pragma once
 #define _USE_MATH_DEFINES
-#include<cmath>
-#include<iostream>                   
+#include<cmath>                 
 #include "memory.h"
 #define SQ(x) (x) * (x)
 #define max(a,b)(a>b?a:b)
@@ -58,6 +57,8 @@ public:
 	Vec3& operator*=(const Vec3& v) { x *= v.x, y *= v.y, z *= v.z; return *this; }
 	Vec3& operator/=(const Vec3& v) { x /= v.x, y /= v.y, z /= v.z; return *this; }
 	Vec3& operator=(const Vec3& v) { x = v.x, y = v.y, z = v.z; return *this; }
+	//bool operator<(const Vec3& v) { float len1 = this->Length(); float len2 = v.Length(); return len1<len2; }
+	//bool operator>(const Vec3& v) { float len1 = this->Length(); float len2 = v.Length(); return len1>len2; }
 
 	float distance(const Vec3& v) const {
 		Vec3 delta = Vec3(v.x - x, v.y - y, v.z - z);
@@ -98,7 +99,12 @@ public:
 			max(v1.v[1], v2.v[1]),
 			max(v1.v[2], v2.v[2]));
 	}
-
+	Vec3 Min(const Vec3& v1, const Vec3& v2)
+	{
+		return Vec3(min(v1.v[0], v2.v[0]),
+			min(v1.v[1], v2.v[1]),
+			min(v1.v[2], v2.v[2]));
+	}
 
 };
 static Vec3 cross(const Vec3& v1, const Vec3& v2)
@@ -360,7 +366,7 @@ public:
 		float det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
 		if (det == 0) {
 			// Handle this case
-			throw std::runtime_error("Matrix is singular and cannot be inverted.");
+			//throw std::runtime_error("Matrix is singular and cannot be inverted.");
 		}
 		det = 1.0 / det;
 		for (int i = 0; i < 16; i++) {

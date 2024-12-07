@@ -5,20 +5,9 @@
 #include "mathLibrary.h"
 #include "GamesEngineeringBase.h"
 #include "AnimationController.h"
-
-//should not be here
-void writeStringToFile(ofstream& outfile, std::string filePath) {
-	size_t length = filePath.size();
-	outfile.write(reinterpret_cast<const char*>(&length), sizeof(size_t));
-	outfile.write(filePath.c_str(), length);
-}
-
-void readStringfromFile(ifstream& infile, std::string filePath) {
-	size_t length;
-	infile.read(reinterpret_cast<char*>(&length), sizeof(length));
-	filePath.resize(length);
-	infile.read(&filePath[0], length);
-}
+#include "Collision.h"
+//#include "Texture.h"
+#include "Utils.h"
 
 class GameObject {
 public:
@@ -31,6 +20,8 @@ public:
 
 	std::vector<std::string> diffusePath, normalPath;
 	std::string gemPath;
+
+	AABB collisionBox;
 	
 	GameObject(){}
 
@@ -42,9 +33,15 @@ public:
 	Ground(DXcore* core, const Vec3 _position, const Vec3 _scale) {
 		position = _position;
 		scale = _scale;
+		worldMatrix = Matrix::worldMatrix(position, scale, Vec3(0, 0, 0));
+
+		// init shader
 		shader.init("Shaders/VertexShader_static.txt", "Shaders/PixelShader.txt", core);
+		
+		// init mesh (plane)
 		plane.init(core);
-		worldMatrix = Matrix::worldMatrix(position, scale,Vec3(0,0,0) );
+
+		// load texture
 		diffusePath.push_back("Textures/Grass001_1K-PNG_Color.png"); 
 		normalPath.push_back("Textures/Grass001_1K-PNG_NormalDX.png");
 		textures.load(core, diffusePath[0]);
@@ -100,9 +97,15 @@ public:
 	SkyBox(DXcore* core, const Vec3 _position, const Vec3 _scale) {
 		position = _position;
 		scale = _scale;
-		shader.init("Shaders/VertexShader_static.txt", "Shaders/PixelShader_albedo.txt", core);
-		sphere.init(core);
 		worldMatrix = Matrix::worldMatrix(position, scale, Vec3(0, 0, M_PI));
+
+		// init shader
+		shader.init("Shaders/VertexShader_static.txt", "Shaders/PixelShader_albedo.txt", core);
+
+		// init mesh (sphere)
+		sphere.init(core);
+
+		// load texture
 		textures.load(core, "Textures/kloppenheim_06_puresky.png");
 	}
 
@@ -124,25 +127,34 @@ public:
 	std::vector<Matrix> worldMatrices;
 	int num;
 	float timer = 0.f;
+	Foliage(){}
 	Foliage(DXcore* core, std::string VertexSHaderName, std::string gemName, const std::vector<std::string>& texturePaths, Vec3 _position, Vec3 _scale, int _num) {
-		gemPath = gemName;
-		shader.init(VertexSHaderName, "Shaders/PixelShader.txt", core);
-		model.init(gemPath, core);
 		position = _position;
 		scale = _scale;
 		num = _num;
-		
-		for (const auto& texPath : texturePaths) {
-			textures.load(core, texPath);
-		}
 
+		// generate worldMatrices for random foliages
 		for (int i = 0; i < num; i++) {
 			int seedX = rand() % 140;
 			int seedZ = rand() % 120;
 			Vec3 pos = position + Vec3(seedX, 0, seedZ);
 			positions.push_back(pos);
-			worldMatrices.push_back(Matrix::worldMatrix(pos, scale, Vec3(0,0,0)));
+			worldMatrices.push_back(Matrix::worldMatrix(pos, scale, Vec3(0, 0, 0)));
 		}
+		
+		// init mesh (.gem file)
+		gemPath = gemName;
+		model.init(gemPath, core);
+
+		// init shader
+		shader.init(VertexSHaderName, "Shaders/PixelShader.txt", core);
+		
+		// load texture
+		for (const auto& texPath : texturePaths) {
+			textures.load(core, texPath);
+		}
+
+		
 	}
 
 	void draw(DXcore* core, Matrix& vp, float dt) {
@@ -211,7 +223,42 @@ public:
 		}
 		
 	}
+};
 
+class Tree : public Foliage {
+public:
+	std::vector<AABB> collisionBoxes;
+	Tree(DXcore* core, std::string VertexSHaderName, std::string gemName, const std::vector<std::string>& texturePaths, Vec3 _position, Vec3 _scale, int _num) {
+		position = _position;
+		scale = _scale;
+		num = _num;
+
+		// generate worldMatrices for random foliages
+		for (int i = 0; i < num; i++) {
+			int seedX = rand() % 140;
+			int seedZ = rand() % 120;
+			Vec3 pos = position + Vec3(seedX, 0, seedZ);
+			positions.push_back(pos);
+			worldMatrices.push_back(Matrix::worldMatrix(pos, scale, Vec3(0, 0, 0)));
+			// collision box scale
+			model.colliBox.transformAABB(scale, pos);
+			collisionBoxes.push_back(model.colliBox);
+		}
+
+		// init mesh (.gem file)
+		gemPath = gemName;
+		model.init(gemPath, core);
+
+		// init shader
+		shader.init(VertexSHaderName, "Shaders/PixelShader.txt", core);
+
+		// load texture
+		for (const auto& texPath : texturePaths) {
+			textures.load(core, texPath);
+		}
+
+
+	}
 };
 
 class NPC: public GameObject {
@@ -230,17 +277,25 @@ public:
 	NPC(DXcore* core, const Vec3 _position, const Vec3 _scale) {
 		position = _position;
 		scale = _scale;
+		worldMatrix = Matrix::worldMatrix(position, scale, Vec3(0, 0, 0));
 
 		health = 100.f;
 		aggroRange = 30.f;
 		attackRange = 16.f;
 		insideAggroRange = false;
 		insideAttackRange = false;
-		gemPath = "Models/TRex.gem";
 
-		shader.init("Shaders/VertexShader_anim.txt", "Shaders/PixelShader.txt", core);
+		// init mesh (.gem file)
+		gemPath = "Models/TRex.gem";
 		model.init(gemPath, core);
-		worldMatrix = Matrix::worldMatrix(position, scale, Vec3(0,0,0));
+
+		// collision box scale
+		model.colliBox.transformAABB(scale, position);
+		collisionBox = model.colliBox;
+
+		// init shader
+		shader.init("Shaders/VertexShader_anim.txt", "Shaders/PixelShader.txt", core);
+		
 		// initialize animation instance
 		animationInstance.animation = &model.animation;
 		animationInstance.currentAnimation = "Idle";
@@ -330,14 +385,22 @@ public:
 	Player(DXcore* core, const Vec3 _position, const Vec3 _scale) {
 		position = _position;
 		scale = _scale;
+		worldMatrix = Matrix::worldMatrix(position, scale, Vec3(0, 0, 0));
 
+		// init shader
 		shader.init("Shaders/VertexShader_anim.txt", "Shaders/PixelShader.txt", core);
+
+		// init model & AABB
 		model.init("Models/Soldier1.gem", core); 
 
-		worldMatrix = Matrix::worldMatrix(position, scale ,Vec3(0,0,0));
+		// collision box scale
+		model.colliBox.transformAABB(scale, position);
+		collisionBox = model.colliBox;
+
 		// initialize animation instance
 		animationInstance.animation = &model.animation;
 		animationInstance.currentAnimation = "idle";
+
 		// load texture
 		textures.load(core, "Textures/MaleDuty_3_OBJ_Happy_Packed0_Diffuse.png");
 		textures.load(core, "Textures/MaleDuty_3_OBJ_Serious_Packed0_Diffuse.png");
@@ -345,8 +408,12 @@ public:
 		textures.load(core, "Textures/MaleDuty_3_OBJ_Serious_Packed0_Normal.png");
 	}
 
-	void updatePos(Vec3 camPos) {
-		position = camPos - Vec3(-0.8,9.5,-1.3);
+	void updatePos(Vec3 camPos, GameObject& object, bool ifCollided) {
+		Vec3 position_new = camPos - Vec3(-0.8,9.5,-1.3);
+		//  collisionDetection
+		if (!ifCollided) {
+			position = position_new;
+		}
 		worldMatrix = Matrix::worldMatrix(position, scale, Vec3(0,0,0));
 	}
 
@@ -356,5 +423,4 @@ public:
 		//animationInstance.update(animController.stateToString(), dt);
 		animationInstance.update("rifle aiming idle", dt);
 	}
-
 };
