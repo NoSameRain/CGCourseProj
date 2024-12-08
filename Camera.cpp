@@ -8,8 +8,10 @@
 //}
 
 Camera::Camera() {
-    position = Vec3(0, 10, 20);
-    orientation = Quaternion(1, 0, 0, 0);
+    position = Vec3(0, 14, 25);
+    euler = Vec3(0, 0, 0);
+    orientation = Quaternion::fromEulerAngle(euler);
+
     scale = 0.01f;
     flag = true;
 }
@@ -25,73 +27,55 @@ void Camera::updateRotation(float dt, Window& win) {
     }
     
     // calculate mouse movement(to rotate)  
-    float rotateX = (mousex - mouseX_last) * M_PI / 180.f * 0.1;
-    float rotateY = (mousey - mouseY_last) * M_PI / 180.f * 0.1;
+    float rotateX = (mousex - mouseX_last) ;
+    float rotateY = (mousey - mouseY_last);
 
     //ignore tiny rotation
     float threshold = 0.01f; 
     if (abs(rotateX) < threshold) rotateX = 0;
     if (abs(rotateY) < threshold) rotateY = 0;
-    //woss << L"mouse: (" << win.mousex << L", " << mouseX_last <<  L")\n";
-    //debugMessage(woss.str());
 
-    //if new rotateY add orientation is over  -90 ~ 90 camera may up side down
-    float pitchLimit = M_PI / 2.0f - 0.1f; // restrict rotation to -90 ~ 90
-    Vec3 eulerAngle = orientation.toEulerAngle();
-    float newPitch = clamp(eulerAngle.x + rotateY, -pitchLimit, pitchLimit);
-    rotateY = newPitch - eulerAngle.x;
-
-    //woss << L"Mouse movement: (" << moveX << L", " << moveY << L")\n";
-    //debugMessage(woss.str());
-
-    // quaternion for yaw rotation: around Y-axis
-    Quaternion yaw = yaw.fromAxisAngle(Vec3(0, 1, 0), rotateX);
-    // quaternion for pitch rotation: around X-axis
-    Quaternion pitch = pitch.fromAxisAngle(Vec3(1, 0, 0), rotateY);
-
-    orientation = pitch *(yaw * orientation);
-    orientation.normalized();
+    euler += Vec3(-rotateX, -rotateY, 0) * dt * 180.0;
+    orientation = Quaternion::fromEulerAngle(euler).normalized();
     
-    rotation = orientation.toMatrix();
-
     mouseX_last = mousex;
     mouseY_last = mousey;
-
-    
-    //woss << L"Orientation: " << orientation.a << L", " << orientation.b << L", " << orientation.c << L", " << orientation.d << L"\n";
-    //debugMessage(woss.str());
 }
 
 
-void Camera::updateTranslation(float dt, Window& win) {
+void Camera::updateTranslation(float dt, Window& win, bool ifCollided) {
     //float move = static_cast<int>(speed * dt);
 
     // transformDirection
-    Vec3 forward = rotation.mulVec(Vec3(0, 0, 1));// -1
-    Vec3 right = rotation.mulVec(Vec3(1, 0, 0));  
+    Vec3 forward = orientation * Vec3(0, 0, -1);
+    Vec3 right = orientation * Vec3(1, 0, 0);
+    Vec3 pos_new = position;
     forward.y = 0.f;
     right.y = 0.f;
 
     if (win.keys['W']) {
-        position += forward * scale;
+        pos_new += forward * scale;
     }
     if (win.keys['S']) {
-        position -= forward * scale;
+        pos_new -= forward * scale;
     }
     if (win.keys['A']) {
-        position -= right * scale;
+        pos_new -= right * scale;
     }
     if (win.keys['D']) {
-        position += right * scale;
+        pos_new += right * scale;
     }
-    
+    if (!ifCollided) {
+        position = pos_new;
+    }
 }
-
+//Vec3(0, 1, -0.95)
 Matrix Camera::getLookAtMat() {
     // rotate the direction of forward and up 
-    Vec3 forward = rotation.mulVec(Vec3(0, 0, 1));
-    Vec3 up = rotation.mulVec(Vec3(0, -1, 0));
-    
+    Vec3 forward = orientation * Vec3(0, 0, -1);
+    Vec3 up = orientation * Vec3(0, 1, 0);
+    Vec3 right = orientation * Vec3(1, 0, 0);
+
     Matrix m;
     m = m.lookAtMat(position, position + forward, Vec3(0, 1, 0));
     /*woss << L"pos: (" << position.x << L", " << position.y << L", " << position.z <<  L")\n";

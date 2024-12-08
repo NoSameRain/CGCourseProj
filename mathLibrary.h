@@ -538,6 +538,16 @@ public:
 			a * q.d + b * q.c - c * q.b + d * q.a
 		);
 	}
+	Vec3 operator*(const Vec3& _q) const {
+		Quaternion q = Quaternion(0, _q.x, _q.y, _q.z).normalized();
+		Quaternion res = Quaternion(
+			a * q.a - b * q.b - c * q.c - d * q.d,
+			a * q.b + b * q.a + c * q.d - d * q.c,
+			a * q.c - b * q.d + c * q.a + d * q.b,
+			a * q.d + b * q.c - c * q.b + d * q.a
+		);
+		return Vec3(res.b, res.c, res.d);
+	}
 
 	Vec3 toEulerAngle() const {
 		float pitch;
@@ -549,20 +559,39 @@ public:
 		return Vec3(pitch, yaw, roll);
 	}
 
-	Quaternion fromEulerAngle(const Vec3 euler) const {
-		float sin_pitch = sinf(euler.x / 2.f);
-		float cos_pitch = cosf(euler.x / 2.f);
-		float sin_yaw = sinf(euler.y / 2.f);
-		float cos_yaw = cosf(euler.y / 2.f);
-		float sin_roll = sinf(euler.z / 2.f);
-		float cos_roll = cosf(euler.z / 2.f);
+	static Quaternion fromEulerAngle(const Vec3 _euler)  {
+		Vec3 euler = _euler * (M_PI / 180.f);  // Convert degrees to radians
+		//float sin_pitch = sinf(euler.x / 2.f);
+		//float cos_pitch = cosf(euler.x / 2.f);
+		//float sin_yaw = sinf(euler.y / 2.f);
+		//float cos_yaw = cosf(euler.y / 2.f);
+		//float sin_roll = sinf(euler.z / 2.f);
+		//float cos_roll = cosf(euler.z / 2.f);
 
-		return Quaternion(
-			cos_yaw* cos_pitch* cos_roll+ sin_pitch* sin_yaw* sin_roll,
-			sin_roll * cos_pitch * cos_yaw - cos_roll * sin_pitch * sin_yaw, 
-			cos_roll * sin_pitch * cos_yaw + sin_roll * cos_pitch * sin_yaw, 
-			cos_roll * cos_pitch * sin_yaw - sin_roll * sin_pitch * cos_yaw  
+		//Quaternion q(
+		//	cos_yaw* cos_pitch* cos_roll+ sin_pitch* sin_yaw* sin_roll,
+		//	sin_roll * cos_pitch * cos_yaw - cos_roll * sin_pitch * sin_yaw, 
+		//	cos_roll * sin_pitch * cos_yaw + sin_roll * cos_pitch * sin_yaw, 
+		//	cos_roll * cos_pitch * sin_yaw - sin_roll * sin_pitch * cos_yaw  
+		//);
+		//float magnitude = sqrt(q.a * q.a + q.b * q.b + q.c * q.c + q.d * q.d);
+		//return Quaternion(q.a / magnitude, q.b / magnitude, q.c / magnitude, q.d / magnitude);
+
+		float cy = cos(euler.z * 0.5f);
+		float sy = sin(euler.z * 0.5f);
+		float cp = cos(euler.x * 0.5f);
+		float sp = sin(euler.x * 0.5f);
+		float cr = cos(euler.y * 0.5f);
+		float sr = sin(euler.y * 0.5f);
+
+		Quaternion q(
+			cr * cp * cy + sr * sp * sy,
+			sr * cp * cy - cr * sp * sy,
+			cr * sp * cy + sr * cp * sy,
+			cr * cp * sy - sr * sp * cy
 		);
+		float magnitude = sqrt(q.a * q.a + q.b * q.b + q.c * q.c + q.d * q.d);
+		return Quaternion(q.a / magnitude, q.b / magnitude, q.c / magnitude, q.d / magnitude);
 	}
 };
 

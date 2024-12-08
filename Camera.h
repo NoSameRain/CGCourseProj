@@ -9,12 +9,13 @@ public:
 	Vec3 position;
     Quaternion orientation; 
 	Matrix rotation;
+	Vec3 euler;
     float scale;
 	float mouseX_last, mouseY_last;
 	bool flag;
 
 	Camera();
-	void updateTranslation(float dt, Window& win);
+	void updateTranslation(float dt, Window& win, bool ifCollided);
 	void updateRotation(float dt, Window& win);
 	Matrix getLookAtMat();
 };

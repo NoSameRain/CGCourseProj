@@ -22,6 +22,8 @@ void AABB::transformAABB(const Vec3& scale, const Vec3& translation) {
 
     min_ = boxCenter + Vec3(relativeMin.x * scale.x, relativeMin.y * scale.y, relativeMin.z * scale.z) + translation;
     max_ = boxCenter + Vec3(relativeMax.x * scale.x, relativeMax.y * scale.y, relativeMax.z * scale.z) + translation;
+    //min_ = boxCenter + relativeMin;
+    //max_ = boxCenter + relativeMax;
 }
 
 bool AABB::collisionCheck(AABB& box2) {

@@ -9,6 +9,7 @@
 #include "levelManager.h"
 #include "Collision.h"
 #include "CollisionDetection.h"
+#include "Utils.h"
 
 extern "C" {
 	__declspec(dllexport) extern DWORD NvOptimusEnablement;
@@ -49,7 +50,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 	};
 	Tree pine(&core, "Shaders/VertexShader_static.txt", "Models/pine1.gem", treeTextures,  Vec3(-80,0,-70), Vec3(0.05, 0.05, 0.05), 23);
 	
-	std::vector<std::string> flowerTextures = {
+	/*std::vector<std::string> flowerTextures = {
 	"Textures/flower daisy.png",
 	"Textures/plant05.png",
 	"Textures/daisy leaf.png",
@@ -57,9 +58,10 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 	"Textures/plant05_Normal.png",
 	"Textures/daisy leaf_Normal.png"
 	};
-	Foliage flower(&core, "Shaders/VertexShader_grass.txt", "Models/flower1.gem", flowerTextures, Vec3(-60, 0, -60), Vec3(0.08, 0.08, 0.08), 50);
+	Foliage flower(&core, "Shaders/VertexShader_grass.txt", "Models/flower1.gem", flowerTextures, Vec3(-60, 0, -60), Vec3(0.08, 0.08, 0.08), 50);*/
 	
 	NPC npc(&core, Vec3(0, 0, -10), Vec3(2, 2, 2));
+	//NPC npc1(&core, Vec3(-5, 0, -10), Vec3(1.9, 1.9, 1.9));
 	Ground ground(&core, Vec3(0, 0, 0), Vec3(8, 1, 8));
 	SkyBox skyBox(&core, Vec3(0, 0, 0), Vec3(1, 1, 1));
 	Player player(&core, Vec3(0, 0, 20), Vec3(0.06, 0.06, 0.06));
@@ -79,18 +81,21 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		float dt = timer.dt();
 
 		//------------------------------------------CAMERA----------------------------------------------
+		// collision detection: only detect tree and npc here
+		ifCollided = collisionDetectionTree(player, pine) || collisionDetection(player, npc);// || collisionDetectionNPC(npc, npc1);
+		if(ifCollided) debugLog("collided !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		// update camera -- first personal view
 		camera.updateRotation(dt, window);
-		camera.updateTranslation(dt, window);
+		camera.updateTranslation(dt, window,ifCollided);
 		view = camera.getLookAtMat();
 		vp =  view * projection;
 		                                                                    
 		// load and save data from custom file
 		if (window.keys['O']) {
-			levelManager.saveLevelData(ground, pine, flower, npc, player);
+			//levelManager.saveLevelData(ground, pine, flower, npc, player);
 		}
 		if (window.keys['L']) {
-			levelManager.loadLevelData(&core, ground, pine, flower, npc, player);
+			//levelManager.loadLevelData(&core, ground, pine, flower, npc, player);
 		}
 
 		//------------------------------------------DRAW------------------------------------------------
@@ -101,17 +106,21 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		skyBox.draw(&core, vp);
 		// draw foliage
 		pine.draw(&core,vp,dt);
-		flower.draw(&core, vp,dt);
+		//flower.draw(&core, vp,dt);
 		// draw npc
 		npc.updateAnimationInstance(dt, camera.position);
 		npc.draw(&core, vp);
-		// collision detection: only detect tree and npc here
-		ifCollided = collisionDetectionTree(player, pine) && collisionDetection(player, npc);
+		//npc1.updateAnimationInstance(dt, camera.position);
+		//npc1.draw(&core, vp);
 		// draw player
-		// update player position based on camera position
-		player.updatePos(camera.position, pine, ifCollided);
+		player.updatePos(camera.position, pine);
 		player.updateAnimationInstance(dt);
-		player.draw(&core, vp);
+		//player.draw(&core, vp);
+		
+		//pine.drawCollisionBox(&core, vp);
+		//npc.drawCollisionBox(&core, vp);
+		//npc1.drawCollisionBox(&core, vp);
+		//player.drawCollisionBox(&core, vp);
 
 		core.present();
 

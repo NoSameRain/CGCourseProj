@@ -53,7 +53,7 @@ void Model_static::init(std::string filename, DXcore* core) {
 			memcpy(&v, &gemmeshes[i].verticesStatic[j], sizeof(STATIC_VERTEX));
 			vertices.push_back(v);
 			// AABB collision detection
-			colliBox.extend(v.pos);
+			if(i==0) colliBox.extend(v.pos);
 		}
 		textureFilenames.push_back(gemmeshes[i].material.find("diffuse").getValue());
 		textureFilenames.push_back(gemmeshes[i].material.find("normals").getValue());

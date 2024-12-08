@@ -6,7 +6,6 @@
 #include "GamesEngineeringBase.h"
 #include "AnimationController.h"
 #include "Collision.h"
-//#include "Texture.h"
 #include "Utils.h"
 
 class GameObject {
@@ -24,6 +23,18 @@ public:
 	AABB collisionBox;
 	
 	GameObject(){}
+
+	void drawCollisionBox(DXcore* core, Matrix& vp) {
+		Cube box;
+		box.init(core, collisionBox);
+		shader.init("Shaders/VertexShader_box.txt", "Shaders/PixelShader_box.txt", core);
+		worldMatrix = Matrix::worldMatrix(Vec3(0, 0, 0), Vec3(1, 1, 1), Vec3(0, 0, 0)); //?
+		shader.updateConstantVS("StaticModel", "staticMeshBuffer", "W", &worldMatrix);
+		shader.updateConstantVS("StaticModel", "staticMeshBuffer", "VP", &vp);
+		shader.apply(core);
+		box.mesh.draw(core);
+
+	}
 
 };
 
@@ -256,7 +267,18 @@ public:
 		for (const auto& texPath : texturePaths) {
 			textures.load(core, texPath);
 		}
-
+	}
+	void drawCollisionBox(DXcore* core, Matrix& vp) {
+		for (const auto& cbox : collisionBoxes) {
+			Cube box;
+			box.init(core, cbox);
+			shader.init("Shaders/VertexShader_box.txt", "Shaders/PixelShader_box.txt", core);
+			worldMatrix = Matrix::worldMatrix(Vec3(0, 0, 0), Vec3(1, 1, 1), Vec3(0, 0, 0)); //?
+			shader.updateConstantVS("StaticModel", "staticMeshBuffer", "W", &worldMatrix);
+			shader.updateConstantVS("StaticModel", "staticMeshBuffer", "VP", &vp);
+			shader.apply(core);
+			box.mesh.draw(core);
+		}
 
 	}
 };
@@ -377,7 +399,7 @@ public:
 		infile.read(reinterpret_cast<char*>(&insideAggroRange), sizeof(bool));
 		infile.read(reinterpret_cast<char*>(&insideAttackRange), sizeof(bool));
 	}
-
+	
 };
 
 class Player : public NPC {
@@ -390,8 +412,9 @@ public:
 		// init shader
 		shader.init("Shaders/VertexShader_anim.txt", "Shaders/PixelShader.txt", core);
 
-		// init model & AABB
-		model.init("Models/Soldier1.gem", core); 
+		// init model 
+		gemPath = "Models/Soldier1.gem";
+		model.init(gemPath, core);
 
 		// collision box scale
 		model.colliBox.transformAABB(scale, position);
@@ -399,7 +422,7 @@ public:
 
 		// initialize animation instance
 		animationInstance.animation = &model.animation;
-		animationInstance.currentAnimation = "idle";
+		animationInstance.currentAnimation = "Idle";
 
 		// load texture
 		textures.load(core, "Textures/MaleDuty_3_OBJ_Happy_Packed0_Diffuse.png");
@@ -408,12 +431,8 @@ public:
 		textures.load(core, "Textures/MaleDuty_3_OBJ_Serious_Packed0_Normal.png");
 	}
 
-	void updatePos(Vec3 camPos, GameObject& object, bool ifCollided) {
-		Vec3 position_new = camPos - Vec3(-0.8,9.5,-1.3);
-		//  collisionDetection
-		if (!ifCollided) {
-			position = position_new;
-		}
+	void updatePos(Vec3 camPos, GameObject& object) {
+		Vec3 position = camPos - Vec3(-0.8,14,15); // z -1.3 15
 		worldMatrix = Matrix::worldMatrix(position, scale, Vec3(0,0,0));
 	}
 
@@ -421,6 +440,9 @@ public:
 		// update current animation state 
 		//animController.updateNPCState(insideAggroRange, insideAttackRange, health, dt);
 		//animationInstance.update(animController.stateToString(), dt);
-		animationInstance.update("rifle aiming idle", dt);
+		animationInstance.update("rifle aiming idle", dt); //rifle aiming idle
+
 	}
+
+	
 };
