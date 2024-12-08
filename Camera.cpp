@@ -8,7 +8,7 @@
 //}
 
 Camera::Camera() {
-    position = Vec3(0, 14, 25);
+    position = Vec3(0, 12, 25);
     euler = Vec3(0, 0, 0);
     orientation = Quaternion::fromEulerAngle(euler);
 
@@ -35,7 +35,8 @@ void Camera::updateRotation(float dt, Window& win) {
     if (abs(rotateX) < threshold) rotateX = 0;
     if (abs(rotateY) < threshold) rotateY = 0;
 
-    euler += Vec3(-rotateX, -rotateY, 0) * dt * 180.0;
+    euler += Vec3(-rotateX, 0, 0) * dt * 80.0;
+    euler += Vec3(0, -rotateY, 0) * dt * 80.0;
     orientation = Quaternion::fromEulerAngle(euler).normalized();
     
     mouseX_last = mousex;
@@ -69,7 +70,7 @@ void Camera::updateTranslation(float dt, Window& win, bool ifCollided) {
         position = pos_new;
     }
 }
-//Vec3(0, 1, -0.95)
+
 Matrix Camera::getLookAtMat() {
     // rotate the direction of forward and up 
     Vec3 forward = orientation * Vec3(0, 0, -1);
@@ -77,7 +78,7 @@ Matrix Camera::getLookAtMat() {
     Vec3 right = orientation * Vec3(1, 0, 0);
 
     Matrix m;
-    m = m.lookAtMat(position, position + forward, Vec3(0, 1, 0));
+    m = m.lookAtMat(position, position + forward, Vec3(0, 1,0));
     /*woss << L"pos: (" << position.x << L", " << position.y << L", " << position.z <<  L")\n";
     debugMessage(woss.str());*/
     return m;

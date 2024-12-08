@@ -302,8 +302,8 @@ public:
 		worldMatrix = Matrix::worldMatrix(position, scale, Vec3(0, 0, 0));
 
 		health = 100.f;
-		aggroRange = 30.f;
-		attackRange = 16.f;
+		aggroRange = 50.f;
+		attackRange = 35.f;
 		insideAggroRange = false;
 		insideAttackRange = false;
 
@@ -432,7 +432,7 @@ public:
 	}
 
 	void updatePos(Vec3 camPos, GameObject& object) {
-		Vec3 position = camPos - Vec3(-0.8,14,15); // z -1.3 15
+		Vec3 position = camPos - Vec3(-0.8,14,12); // z -1.3 15
 		worldMatrix = Matrix::worldMatrix(position, scale, Vec3(0,0,0));
 	}
 
@@ -440,7 +440,7 @@ public:
 		// update current animation state 
 		//animController.updateNPCState(insideAggroRange, insideAttackRange, health, dt);
 		//animationInstance.update(animController.stateToString(), dt);
-		animationInstance.update("rifle aiming idle", dt); //rifle aiming idle
+		animationInstance.update("jump loop", dt); //rifle aiming idle
 
 	}
 
