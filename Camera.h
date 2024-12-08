@@ -13,6 +13,7 @@ public:
     float speed;
 	float mouseX_last, mouseY_last;
 	bool flag;
+	Vec3 lastSafePosition;
 
 	Camera();
 	void updateTranslation(float dt, Window& win, bool ifCollided);

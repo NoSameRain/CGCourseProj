@@ -12,8 +12,9 @@ Camera::Camera() {
     euler = Vec3(0, 0, 0);
     orientation = Quaternion::fromEulerAngle(euler);
 
-    speed = 0.03f;
+    speed = 8.f;
     flag = true;
+    
 }
 
 void Camera::updateRotation(float dt, Window& win) {
@@ -45,8 +46,7 @@ void Camera::updateRotation(float dt, Window& win) {
 
 
 void Camera::updateTranslation(float dt, Window& win, bool ifCollided) {
-    //float move = static_cast<int>(speed * dt);
-
+    float move = speed * dt;
     // transformDirection
     Vec3 forward = orientation * Vec3(0, 0, -1);
     Vec3 right = orientation * Vec3(1, 0, 0);
@@ -55,20 +55,38 @@ void Camera::updateTranslation(float dt, Window& win, bool ifCollided) {
     right.y = 0.f;
 
     if (win.keys['W']) {
-        pos_new += forward * speed;
+        pos_new += forward * move;
     }
     if (win.keys['S']) {
-        pos_new -= forward * speed;
+        pos_new -= forward * move;
     }
     if (win.keys['A']) {
-        pos_new -= right * speed;
+        pos_new -= right * move;
     }
     if (win.keys['D']) {
-        pos_new += right * speed;
+        pos_new += right * move;
     }
-    if (!ifCollided) {
+
+    if(!ifCollided) {
         position = pos_new;
+        lastSafePosition = position;
     }
+    else {
+        //position = lastSafePosition;
+        if (win.keys['W']) {
+            position -= forward * move * 5;
+        }
+        else if (win.keys['S']) {
+            position += forward * move * 5;
+        }
+        else if (win.keys['A']) {
+            position += right * move * 5;
+        }
+        else if (win.keys['D']) {
+            position -= right * move * 5;
+        }
+    }
+
 }
 
 Matrix Camera::getLookAtMat() {

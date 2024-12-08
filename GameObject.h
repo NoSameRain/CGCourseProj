@@ -252,7 +252,7 @@ public:
 			positions.push_back(pos);
 			worldMatrices.push_back(Matrix::worldMatrix(pos, scale, Vec3(0, 0, 0)));
 			// collision box scale
-			model.colliBox.transformAABB(scale, positions[i]);
+			model.colliBox.transformAABB(Vec3(scale.x , scale.y, scale.z * 0.3), positions[i]);
 			collisionBoxes.push_back(model.colliBox);
 		}
 
@@ -311,13 +311,9 @@ public:
 		gemPath = "Models/TRex.gem";
 		model.init(gemPath, core);
 
-		// collision box scale
-		//debugLog("before pos: MAX: " + std::to_string(model.colliBox.max_.x) + ", " + std::to_string(model.colliBox.max_.y) + ", " + std::to_string(model.colliBox.max_.z));
-		//debugLog("before pos: MIN: " + std::to_string(model.colliBox.min_.x) + ", " + std::to_string(model.colliBox.min_.y) + ", " + std::to_string(model.colliBox.min_.z));
-		model.colliBox.transformAABB(scale, position);
+		// collision box transform
+		model.colliBox.transformAABB(Vec3(scale.x * 0.7, scale.y, scale.z*0.8), position);
 		collisionBox = model.colliBox;
-		//debugLog("after pos: MAX: " + std::to_string(model.colliBox.max_.x) + ", " + std::to_string(model.colliBox.max_.y) + ", " + std::to_string(model.colliBox.max_.z));
-		//debugLog("after pos: MIN: " + std::to_string(model.colliBox.min_.x) + ", " + std::to_string(model.colliBox.min_.y) + ", " + std::to_string(model.colliBox.min_.z));
 
 		// init shader
 		shader.init("Shaders/VertexShader_anim.txt", "Shaders/PixelShader.txt", core);
@@ -420,9 +416,8 @@ public:
 		gemPath = "Models/Soldier1.gem";
 		model.init(gemPath, core);
 
-		// collision box scale
-		
-		model.colliBox.transformAABB(scale, position);
+		// collision box transform
+		model.colliBox.transformAABB(Vec3(scale.x*0.5,scale.y,scale.z * 0.8), position);
 		collisionBox = model.colliBox;
 
 		// initialize animation instance
@@ -443,9 +438,6 @@ public:
 
 		Vec3 translation = position - position_previous;
 		collisionBox.updateAABB(translation);
-		
-		//debugLog("Player pos------: " + std::to_string(position.x) + ", " + std::to_string(position.y) + ", " + std::to_string(position.z));
-		//debugLog("Trans pos------: " + std::to_string(translation.x) + ", " + std::to_string(translation.y) + ", " + std::to_string(translation.z));
 	}
 
 	void updateAnimationInstance(float dt) {

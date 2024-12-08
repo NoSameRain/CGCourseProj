@@ -60,7 +60,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 	};
 	Foliage flower(&core, "Shaders/VertexShader_grass.txt", "Models/flower1.gem", flowerTextures, Vec3(-60, 0, -60), Vec3(0.08, 0.08, 0.08), 50);
 	
-	NPC npc(&core, Vec3(0, 0, -5), Vec3(2.2, 2.2, 2.2));
+	NPC npc(&core, Vec3(0, 0, -25), Vec3(2.2, 2.2, 2.2));
 	//NPC npc1(&core, Vec3(-5, 0, -10), Vec3(1.9, 1.9, 1.9));
 	Ground ground(&core, Vec3(0, 0, 0), Vec3(8.5, 1, 8.5));
 	SkyBox skyBox(&core, Vec3(0, 0, 0), Vec3(1.2, 1, 1.2));
@@ -82,7 +82,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 
 		//------------------------------------------CAMERA----------------------------------------------
 		// collision detection: only detect tree and npc here
-		ifCollided = collisionDetection(player, npc);// || collisionDetectionNPC(npc, npc1);
+		ifCollided = collisionDetection(player, npc) || collisionDetectionTree(player, pine);
 
 		// update camera -- first personal view
 		camera.updateRotation(dt, window);
@@ -92,10 +92,10 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		                                                                    
 		// load and save data from custom file
 		if (window.keys['O']) {
-			//levelManager.saveLevelData(ground, pine, flower, npc, player);
+			levelManager.saveLevelData(ground, pine, flower, npc, player);
 		}
 		if (window.keys['L']) {
-			//levelManager.loadLevelData(&core, ground, pine, flower, npc, player);
+			levelManager.loadLevelData(&core, ground, pine, flower, npc, player);
 		}
 
 		//------------------------------------------DRAW------------------------------------------------
@@ -115,6 +115,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		player.updateAnimationInstance(dt);
 		player.draw(&core, vp);
 		
+		// draw collision box -- only for debug
 		//pine.drawCollisionBox(&core, vp);
 		//npc.drawCollisionBox(&core, vp);
 		//player.drawCollisionBox(&core, vp);

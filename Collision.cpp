@@ -40,16 +40,16 @@ void AABB::updateAABB(const Vec3& translation) {
 }
 
 bool AABB::collisionCheck(AABB& box2) {
-    float PDx = min(max_.x, box2.max_.x) - max(min_.x, box2.min_.x);
-    float PDy = min(max_.y, box2.max_.y) - max(min_.y, box2.min_.y);
-    float PDz = min(max_.z, box2.max_.z) - max(min_.z, box2.min_.z);
+    float buffer = 0.1f;
+    float PDx = min(max_.x, box2.max_.x) - max(min_.x, box2.min_.x) - buffer;
+    float PDy = min(max_.y, box2.max_.y) - max(min_.y, box2.min_.y) - buffer;
+    float PDz = min(max_.z, box2.max_.z) - max(min_.z, box2.min_.z) - buffer;
     //debugLog("player: MAX: " + std::to_string(max_.x) + ", " + std::to_string(max_.y) + ", " + std::to_string(max_.z));
     //debugLog("player: MIN: " + std::to_string(min_.x) + ", " + std::to_string(min_.y) + ", " + std::to_string(min_.z));
-    //debugLog("NPC: MAX: " + std::to_string(box2.max_.x) + ", " + std::to_string(box2.max_.y) + ", " + std::to_string(box2.max_.z));
-    //debugLog("npc: MIN: " + std::to_string(box2.min_.x) + ", " + std::to_string(box2.min_.y) + ", " + std::to_string(box2.min_.z));
+    /*debugLog("NPC: MAX: " + std::to_string(box2.max_.x) + ", " + std::to_string(box2.max_.y) + ", " + std::to_string(box2.max_.z));
+    debugLog("npc: MIN: " + std::to_string(box2.min_.x) + ", " + std::to_string(box2.min_.y) + ", " + std::to_string(box2.min_.z));*/
     //debugLog("----------------------");
     if (PDx > 0 && PDy > 0 && PDz > 0) {
-        
         return true;
     }
     return false;

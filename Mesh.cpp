@@ -28,7 +28,6 @@ void Mesh::init_animated(DXcore* core, std::vector<ANIMATED_VERTEX> vertices, st
 	init(core, &vertices[0], sizeof(ANIMATED_VERTEX), vertices.size(), &indices[0], indices.size());
 }
 
-
 void Mesh::draw(DXcore* core) {
 	UINT offsets = 0;
 	core->devicecontext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -42,8 +41,6 @@ void Model_static::init(std::string filename, DXcore* core) {
 	GEMLoader::GEMModelLoader loader;
 	std::vector<GEMLoader::GEMMesh> gemmeshes;
 	loader.load(filename, gemmeshes);
-	//texture
-
 
 	for (int i = 0; i < gemmeshes.size(); i++) {
 		Mesh mesh;
@@ -98,7 +95,7 @@ void Model_animated::init(std::string filename, DXcore* core) {
 		textureFilenames.push_back(gemmeshes[i].material.find("diffuse").getValue());
 		textureFilenames.push_back(gemmeshes[i].material.find("normals").getValue());
 		// Load texture with filename: gemmeshes[i].material.find("diffuse").getValue()
-		//debugLog("tex name: (" + gemmeshes[i].material.find("diffuse").getValue() + ")----------------------");
+		//debugLog("tex name: (" + gemmeshes[i].material.find("diffuse").getValue() + -------------------");
 
 		mesh.init_animated(core, vertices, gemmeshes[i].indices);
 		meshes.push_back(mesh);
