@@ -10,7 +10,7 @@ public:
     Quaternion orientation; 
 	Matrix rotation;
 	Vec3 euler;
-    float scale;
+    float speed;
 	float mouseX_last, mouseY_last;
 	bool flag;
 

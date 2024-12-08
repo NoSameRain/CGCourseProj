@@ -252,7 +252,7 @@ public:
 			positions.push_back(pos);
 			worldMatrices.push_back(Matrix::worldMatrix(pos, scale, Vec3(0, 0, 0)));
 			// collision box scale
-			model.colliBox.transformAABB(scale, pos);
+			model.colliBox.transformAABB(scale, positions[i]);
 			collisionBoxes.push_back(model.colliBox);
 		}
 
@@ -312,8 +312,12 @@ public:
 		model.init(gemPath, core);
 
 		// collision box scale
+		//debugLog("before pos: MAX: " + std::to_string(model.colliBox.max_.x) + ", " + std::to_string(model.colliBox.max_.y) + ", " + std::to_string(model.colliBox.max_.z));
+		//debugLog("before pos: MIN: " + std::to_string(model.colliBox.min_.x) + ", " + std::to_string(model.colliBox.min_.y) + ", " + std::to_string(model.colliBox.min_.z));
 		model.colliBox.transformAABB(scale, position);
 		collisionBox = model.colliBox;
+		//debugLog("after pos: MAX: " + std::to_string(model.colliBox.max_.x) + ", " + std::to_string(model.colliBox.max_.y) + ", " + std::to_string(model.colliBox.max_.z));
+		//debugLog("after pos: MIN: " + std::to_string(model.colliBox.min_.x) + ", " + std::to_string(model.colliBox.min_.y) + ", " + std::to_string(model.colliBox.min_.z));
 
 		// init shader
 		shader.init("Shaders/VertexShader_anim.txt", "Shaders/PixelShader.txt", core);
@@ -405,7 +409,7 @@ public:
 class Player : public NPC {
 public:
 	Player(DXcore* core, const Vec3 _position, const Vec3 _scale) {
-		position = _position;
+		position = Vec3(0, 12, 25) - Vec3(-0.8, 12, 12);// _position;
 		scale = _scale;
 		worldMatrix = Matrix::worldMatrix(position, scale, Vec3(0, 0, 0));
 
@@ -417,12 +421,13 @@ public:
 		model.init(gemPath, core);
 
 		// collision box scale
+		
 		model.colliBox.transformAABB(scale, position);
 		collisionBox = model.colliBox;
 
 		// initialize animation instance
 		animationInstance.animation = &model.animation;
-		animationInstance.currentAnimation = "Idle";
+		animationInstance.currentAnimation = "idle";
 
 		// load texture
 		textures.load(core, "Textures/MaleDuty_3_OBJ_Happy_Packed0_Diffuse.png");
@@ -432,15 +437,22 @@ public:
 	}
 
 	void updatePos(Vec3 camPos, GameObject& object) {
-		Vec3 position = camPos - Vec3(-0.8,14,12); // z -1.3 15
+		Vec3 position_previous = position;
+		position = camPos - Vec3(-0.8,14,12); // z -1.3 15
 		worldMatrix = Matrix::worldMatrix(position, scale, Vec3(0,0,0));
+
+		Vec3 translation = position - position_previous;
+		collisionBox.updateAABB(translation);
+		
+		//debugLog("Player pos------: " + std::to_string(position.x) + ", " + std::to_string(position.y) + ", " + std::to_string(position.z));
+		//debugLog("Trans pos------: " + std::to_string(translation.x) + ", " + std::to_string(translation.y) + ", " + std::to_string(translation.z));
 	}
 
 	void updateAnimationInstance(float dt) {
 		// update current animation state 
 		//animController.updateNPCState(insideAggroRange, insideAttackRange, health, dt);
 		//animationInstance.update(animController.stateToString(), dt);
-		animationInstance.update("jump loop", dt); //rifle aiming idle
+		animationInstance.update("jump loop", dt); //jump loop rifle aiming idle
 
 	}
 

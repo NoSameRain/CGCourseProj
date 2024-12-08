@@ -7,7 +7,7 @@
 #define max_tri(a, b, c) ((a > b ? a : b) > c ? (a > b ? a : b) : c)
 #define min(a,b)(a<b?a:b)
 #define min_tri(a, b, c) ((a < b ? a : b) < c ? (a < b ? a : b) : c)
-#define M_PI       3.14159265358979323846
+#define M_PI 3.14159265358979323846
 
 const float _near = 0.1;
 const float _far = 500;

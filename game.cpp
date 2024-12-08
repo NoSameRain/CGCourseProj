@@ -48,7 +48,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 	"Textures/bark07_Normal.png",
 	"Textures/fir branch_Normal.png"
 	};
-	Tree pine(&core, "Shaders/VertexShader_static.txt", "Models/pine1.gem", treeTextures,  Vec3(-80,0,-70), Vec3(0.05, 0.05, 0.05), 23);
+	Tree pine(&core, "Shaders/VertexShader_static.txt", "Models/pine1.gem", treeTextures,  Vec3(-80,0,-70), Vec3(0.05, 0.05, 0.05), 23); //23
 	
 	std::vector<std::string> flowerTextures = {
 	"Textures/flower daisy.png",
@@ -60,11 +60,11 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 	};
 	Foliage flower(&core, "Shaders/VertexShader_grass.txt", "Models/flower1.gem", flowerTextures, Vec3(-60, 0, -60), Vec3(0.08, 0.08, 0.08), 50);
 	
-	NPC npc(&core, Vec3(0, 0, -25), Vec3(2.2, 2.2, 2.2));
+	NPC npc(&core, Vec3(0, 0, -5), Vec3(2.2, 2.2, 2.2));
 	//NPC npc1(&core, Vec3(-5, 0, -10), Vec3(1.9, 1.9, 1.9));
 	Ground ground(&core, Vec3(0, 0, 0), Vec3(8.5, 1, 8.5));
 	SkyBox skyBox(&core, Vec3(0, 0, 0), Vec3(1.2, 1, 1.2));
-	Player player(&core, Vec3(0, 0, 0), Vec3(0.065, 0.065, 0.065));
+	Player player(&core, Vec3(0, 0, 0), Vec3(0.065, 0.065, 0.065)); //0.065, 0.065, 0.065
 	
 	// bind sampler to s0 and s1: s0 for diffuse, s1 for normal map
 	sampler.bind(&core, 0);
@@ -82,8 +82,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 
 		//------------------------------------------CAMERA----------------------------------------------
 		// collision detection: only detect tree and npc here
-		ifCollided = collisionDetectionTree(player, pine) || collisionDetection(player, npc);// || collisionDetectionNPC(npc, npc1);
-		if(ifCollided) debugLog("collided !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		ifCollided = collisionDetection(player, npc);// || collisionDetectionNPC(npc, npc1);
+
 		// update camera -- first personal view
 		camera.updateRotation(dt, window);
 		camera.updateTranslation(dt, window,ifCollided);
@@ -110,8 +110,6 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		// draw npc
 		npc.updateAnimationInstance(dt, camera.position);
 		npc.draw(&core, vp);
-		//npc1.updateAnimationInstance(dt, camera.position);
-		//npc1.draw(&core, vp);
 		// draw player
 		player.updatePos(camera.position, pine);
 		player.updateAnimationInstance(dt);
@@ -119,7 +117,6 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		
 		//pine.drawCollisionBox(&core, vp);
 		//npc.drawCollisionBox(&core, vp);
-		//npc1.drawCollisionBox(&core, vp);
 		//player.drawCollisionBox(&core, vp);
 
 		core.present();

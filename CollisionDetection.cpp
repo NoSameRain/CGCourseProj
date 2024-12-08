@@ -1,21 +1,20 @@
 #include "CollisionDetection.h"
-bool collisionDetection(Player& player, GameObject& object) {
-	if (player.model.colliBox.collisionCheck(object.collisionBox)) {
+#include "Utils.h"
+bool collisionDetection(Player& player, NPC& object) {
+	if (player.collisionBox.collisionCheck(object.collisionBox)) {
+		debugLog("Collision detected between Player and NPC");
 		return true;
 	}
-	return false;
-}
-bool collisionDetectionNPC(NPC& n1, NPC& n2) {
-	if (n1.model.colliBox.collisionCheck(n2.collisionBox)) {
-		return true;
-	}
+	//debugLog("No collision detected between Player and NPC");
 	return false;
 }
 bool collisionDetectionTree(Player& player, Tree& object) {
 	for (auto& box : object.collisionBoxes) {
-		if (player.model.colliBox.collisionCheck(box)) {
+		if (player.collisionBox.collisionCheck(box)) {
+			debugLog("Collision detected between Player and Tree");
 			return true;
 		}
 	}
+	//debugLog("No collision detected between Player and Tree");
 	return false;
 }

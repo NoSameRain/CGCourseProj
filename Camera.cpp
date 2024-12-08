@@ -12,7 +12,7 @@ Camera::Camera() {
     euler = Vec3(0, 0, 0);
     orientation = Quaternion::fromEulerAngle(euler);
 
-    scale = 0.01f;
+    speed = 0.03f;
     flag = true;
 }
 
@@ -35,8 +35,8 @@ void Camera::updateRotation(float dt, Window& win) {
     if (abs(rotateX) < threshold) rotateX = 0;
     if (abs(rotateY) < threshold) rotateY = 0;
 
-    euler += Vec3(-rotateX, 0, 0) * dt * 80.0;
-    euler += Vec3(0, -rotateY, 0) * dt * 80.0;
+    euler += Vec3(-rotateX, 0, 0) * dt * 60.0;
+    euler += Vec3(0, -rotateY, 0) * dt * 60.0;
     orientation = Quaternion::fromEulerAngle(euler).normalized();
     
     mouseX_last = mousex;
@@ -55,16 +55,16 @@ void Camera::updateTranslation(float dt, Window& win, bool ifCollided) {
     right.y = 0.f;
 
     if (win.keys['W']) {
-        pos_new += forward * scale;
+        pos_new += forward * speed;
     }
     if (win.keys['S']) {
-        pos_new -= forward * scale;
+        pos_new -= forward * speed;
     }
     if (win.keys['A']) {
-        pos_new -= right * scale;
+        pos_new -= right * speed;
     }
     if (win.keys['D']) {
-        pos_new += right * scale;
+        pos_new += right * speed;
     }
     if (!ifCollided) {
         position = pos_new;
