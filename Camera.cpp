@@ -1,6 +1,7 @@
 ﻿#include "Camera.h"
 #include <string>
 #include <sstream>
+#include <algorithm>
 
 Camera::Camera() {
     position = Vec3(0, 12, 25);
@@ -32,9 +33,15 @@ void Camera::updateRotation(float dt, Window& win) {
     if (abs(rotateX) < threshold) rotateX = 0;
     if (abs(rotateY) < threshold) rotateY = 0;
 
-    euler += Vec3(-rotateX, 0, 0) * dt * 60.0; // yaw: rotate around axis-x
-    euler += Vec3(0, -rotateY, 0) * dt * 60.0; // pitch： rotate around axis-y
+    // update Euler angles based on mouse movement
+    float s = 60.f;
+    euler += Vec3(-rotateX, 0, 0) * dt * s; // yaw: rotate around axis-x
+    euler += Vec3(0, -rotateY, 0) * dt * s; // pitch： rotate around axis-y
     orientation = Quaternion::fromEulerAngle(euler).normalized();
+
+    // clamp the pitch to avoid flipping the camera
+    const float maxPitch = 89.0f; // maximum pitch angle in degrees
+    euler.y = clamp(euler.y, -maxPitch, maxPitch);
     
     // save mouse pos for next frame
     mouseX_last = mousex;
@@ -53,6 +60,7 @@ void Camera::updateTranslation(float dt, Window& win, bool ifCollided) {
     forward.y = 0.f;
     right.y = 0.f;
 
+    // update position based on input
     if (win.keys['W']) {
         pos_new += forward * move;
     }
@@ -65,6 +73,7 @@ void Camera::updateTranslation(float dt, Window& win, bool ifCollided) {
     if (win.keys['D']) {
         pos_new += right * move;
     }
+    // handle collision response
     // if player collided with object, then move away from it
     if(!ifCollided) {
         position = pos_new;
