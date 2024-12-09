@@ -24,12 +24,13 @@ float4 PS(PS_INPUT input) : SV_Target0
 	float3 tangent = normalize(input.Tangent);
 	float3 binormal = normalize(cross(input.Normal, tangent));
 	float3x3 TBN = float3x3(tangent, binormal, normal);
-	
+	// sample Normal Map at texture coordinates
 	float3 mapNormal = normalsTexture.Sample(normalSampler, input.TexCoords).xyz;
-	
+	// reconstruct tangent space normal
 	mapNormal = mapNormal * 2.0 - 1.0;
+	// strengthen normal
 	mapNormal = normalize(mapNormal * 2.0);
-
+	// rotate lighting into normal map space
 	float3 localLightDir = mul(lightDir, transpose(TBN));
 
 	float4 albedo;
@@ -38,9 +39,9 @@ float4 PS(PS_INPUT input) : SV_Target0
 	{
     		discard;
 	}
-	// diffuse
+	// Compute lighting with new normal
 	float3 diffuse = (albedo.rgb / PI) * (lightColour * max(dot(mapNormal, localLightDir), 0.0) + ambient );
 
-	return float4(diffuse.rgb, 1.0);
+	return float4(albedo.rgb, 1.0);
 
 }

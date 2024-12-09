@@ -49,8 +49,8 @@ void Model_static::init(std::string filename, DXcore* core) {
 			STATIC_VERTEX v;
 			memcpy(&v, &gemmeshes[i].verticesStatic[j], sizeof(STATIC_VERTEX));
 			vertices.push_back(v);
-			// AABB collision detection
-			if(i==0) colliBox.extend(v.pos);
+			// AABB collision box
+			colliBox.extend(v.pos);
 		}
 		textureFilenames.push_back(gemmeshes[i].material.find("diffuse").getValue());
 		textureFilenames.push_back(gemmeshes[i].material.find("normals").getValue());
@@ -62,9 +62,9 @@ void Model_static::init(std::string filename, DXcore* core) {
 	}
 }
 
-void Model_static::bindTexture(DXcore* core, TextureManager* textures, Shader* shader, int index) {//string texTypeName) {
-	shader->updateTexturePS(core, 0, textures->find(textureFilenames[index * 2]));
-	shader->updateTexturePS(core, 1, textures->find(textureFilenames[index * 2 + 1]));
+void Model_static::bindTexture(DXcore* core, TextureManager* textures, Shader* shader, int index) {
+	shader->updateTexturePS(core, 0, textures->find(textureFilenames[index * 2])); // albedo
+	shader->updateTexturePS(core, 1, textures->find(textureFilenames[index * 2 + 1])); // normal
 }
 
 void Model_static::draw(DXcore* core) {

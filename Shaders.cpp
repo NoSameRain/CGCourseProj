@@ -76,7 +76,7 @@ void Shader::updateConstantVS(std::string modelName, std::string bufferName, std
     }
 }
 
-//tex bind texture to t0 and t1 
+//bind texture to t0 / t1 
 void Shader::updateTexturePS(DXcore* core, UINT startSlot, ID3D11ShaderResourceView* srv) {
     core->devicecontext->PSSetShaderResources(startSlot, 1, &srv);
 }

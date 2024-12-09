@@ -10,22 +10,24 @@
 
 class GameObject {
 public:
+	Vec3 position;
+	Vec3 scale;
 	Matrix worldMatrix;
 	Shader shader;
 	TextureManager textures;
-
-	Vec3 position;
-	Vec3 scale;
-
-	std::vector<std::string> diffusePath, normalPath;
+	// store file path of diffuse,normal textures
+	std::vector<std::string> diffusePath, normalPath;  
+	// store file path of .GEM file
 	std::string gemPath;
-
+	// store min and max value of AABB
 	AABB collisionBox;
 	
 	GameObject(){}
-
+	virtual ~GameObject() {} 
+	virtual void draw(DXcore* core, Matrix& vp){}
+	virtual void saveDatatoFile(ofstream& outfile) = 0;
+	virtual void loadDataFromFile(DXcore* core, ifstream& infile) = 0;
 	void drawCollisionBox(DXcore* core, Matrix& vp);
-
 };
 
 class Ground :public GameObject {
@@ -33,10 +35,9 @@ public:
 	Plane plane;
 	Ground(DXcore* core, const Vec3 _position, const Vec3 _scale);
 
-	void draw(DXcore* core, Matrix& vp);
-	void saveDatatoFile(ofstream& outfile);
-
-	void loadDataFromFile(DXcore* core, ifstream& infile);
+	void draw(DXcore* core, Matrix& vp)override;
+	void saveDatatoFile(ofstream& outfile)override;
+	void loadDataFromFile(DXcore* core, ifstream& infile)override;
 };
 
 class SkyBox :public GameObject {
@@ -44,8 +45,9 @@ public:
 	Sphere sphere;
 	float timer = 0.f;
 	SkyBox(DXcore* core, const Vec3 _position, const Vec3 _scale);
-
-	void draw(DXcore* core, Matrix& vp);
+	void draw(DXcore* core, Matrix& vp)override;
+	void saveDatatoFile(ofstream& outfile) override {}
+	void loadDataFromFile(DXcore* core, ifstream& infile) override {}
 };
 
 class Foliage : public GameObject {
@@ -60,9 +62,9 @@ public:
 
 	void draw(DXcore* core, Matrix& vp, float dt);
 
-	void saveDatatoFile(ofstream& outfile);
+	void saveDatatoFile(ofstream& outfile)override;
 
-	void loadDataFromFile(DXcore* core, ifstream& infile);
+	void loadDataFromFile(DXcore* core, ifstream& infile)override;
 };
 
 class Tree : public Foliage {
@@ -93,11 +95,11 @@ public:
 
 	void updateAnimationInstance(float dt, Vec3 playerPos);
 
-	void draw(DXcore* core, Matrix& vp);
+	void draw(DXcore* core, Matrix& vp)override;
 
-	void saveDatatoFile(ofstream& outfile);
+	void saveDatatoFile(ofstream& outfile)override;
 
-	void loadDataFromFile(DXcore* core, ifstream& infile);
+	void loadDataFromFile(DXcore* core, ifstream& infile)override;
 	
 };
 
@@ -108,6 +110,5 @@ public:
 	void updatePos(Vec3 camPos, GameObject& object);
 
 	void updateAnimationInstance(float dt);
-
 	
 };

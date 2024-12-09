@@ -141,16 +141,16 @@ void Foliage::draw(DXcore* core, Matrix& vp, float dt) {
 }
 
 void Foliage::saveDatatoFile(ofstream& outfile) {
-	// number of foliage
+	// write number of foliages in the scene to file
 	outfile.write(reinterpret_cast<const char*>(&num), sizeof(int));
-	// position, scale
+	// write position, scale value for every foliage (with same scale value)
 	for (auto& pos : positions) {
 		outfile.write(reinterpret_cast<const char*>(&pos), sizeof(Vec3));
 	}
 	outfile.write(reinterpret_cast<const char*>(&scale), sizeof(Vec3));
-	// mesh
+	// write .GEM mesh file path
 	writeStringToFile(outfile, gemPath);
-	// texture: diffus, normal
+	// write texture file path: diffuse, normal 
 	for (auto& path : diffusePath) {
 		writeStringToFile(outfile, path);
 	}
@@ -158,28 +158,31 @@ void Foliage::saveDatatoFile(ofstream& outfile) {
 		writeStringToFile(outfile, path);
 	}
 
-
 }
 
 void Foliage::loadDataFromFile(DXcore* core, ifstream& infile) {
-	// number of foliage
+	// read number of foliages in the scene from file
 	infile.read(reinterpret_cast<char*>(&num), sizeof(int));
-	// position, scale
+
+	// read position, scale value for every foliage (with same scale value)
 	positions.clear();
 	Vec3 pos;
 	while (infile.read(reinterpret_cast<char*>(&pos), sizeof(Vec3))) {
 		positions.push_back(pos);
 	}
 	infile.read(reinterpret_cast<char*>(&scale), sizeof(Vec3));
-	// worldMatrix
+
+	// recalculate worldMatrix by position and scale loaded
 	worldMatrices.clear();
 	for (int i = 0; i < num; i++) {
 		worldMatrices.push_back(Matrix::worldMatrix(positions[i], scale, Vec3(0, 0, 0)));
 	}
-	// mesh
+
+	// read .GEM mesh file path and re-init model
 	readStringfromFile(infile, gemPath);
 	model.init(gemPath, core);
-	// texture: diffus, normal
+
+	// read texture file path: diffuse, normal and reload texture
 	for (auto& path : diffusePath) {
 		readStringfromFile(infile, path);
 		textures.load(core, path);
@@ -188,7 +191,6 @@ void Foliage::loadDataFromFile(DXcore* core, ifstream& infile) {
 		readStringfromFile(infile, path);
 		textures.load(core, path);
 	}
-
 }
 
 Tree::Tree(DXcore* core, std::string VertexSHaderName, std::string gemName, const std::vector<std::string>& texturePaths, Vec3 _position, Vec3 _scale, int _num) {

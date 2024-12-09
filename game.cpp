@@ -54,6 +54,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 	sampler.init(&core);
 	// initaiize gameObect
 	
+	// initialize
 	std::vector<std::string> treeTextures = {
 	"Textures/bark07.png",
 	"Textures/fir branch.png",
@@ -90,52 +91,45 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		}
 
 		float dt = timer.dt();
-
 		// output FPS once per second
 		getFPS(dt);
 
-		//------------------------------------------CAMERA----------------------------------------------
+		//------------------------------------------COLLISION----------------------------------------------
 		// collision detection: only detect tree and npc here
 		ifCollided = collisionDetection(player, npc) || collisionDetectionTree(player, pine);
-
+		//------------------------------------------CAMERA----------------------------------------------
 		// update camera -- first personal view
 		camera.updateRotation(dt, window);
 		camera.updateTranslation(dt, window,ifCollided);
 		view = camera.getLookAtMat();
 		vp =  view * projection;
-		                                                                    
-		// load and save data from custom file
-		if (window.keys['O']) {
-			levelManager.saveLevelData(ground, pine, flower, npc, player);
-		}
-		if (window.keys['L']) {
-			levelManager.loadLevelData(&core, ground, pine, flower, npc, player);
-		}
-
+		//----------------------------------------ANIMATION----------------------------------------------
+		// update gameObject animation
+		npc.updateAnimationInstance(dt, player.position);
+		player.updateAnimationInstance(dt);
 		//------------------------------------------DRAW------------------------------------------------
-		
 		// draw ground
 		ground.draw(&core, vp);
 		// draw sky box
 		skyBox.draw(&core, vp);
 		// draw foliage
-		pine.draw(&core,vp,dt);
+		//pine.draw(&core,vp,dt);
 		flower.draw(&core, vp,dt);
 		// draw npc
-		npc.updateAnimationInstance(dt, camera.position);
-		npc.draw(&core, vp);
+		//npc.draw(&core, vp);
 		// draw player
 		player.updatePos(camera.position, pine);
-		player.updateAnimationInstance(dt);
-		player.draw(&core, vp);
-		
+		//player.draw(&core, vp);
+		//----------------------------------------SAVE & LOAD----------------------------------------------                                                                  
+		// load and save data from custom file
+		if (window.keys['O']) levelManager.saveLevelData(ground, pine, flower, npc, player);
+		if (window.keys['L']) levelManager.loadLevelData(&core, ground, pine, flower, npc, player);
+		//------------------------------------DRAW AABB BOX----------------------------------------------
 		// draw collision box -- only for debug
 		//pine.drawCollisionBox(&core, vp);
 		//npc.drawCollisionBox(&core, vp);
-		//player.drawCollisionBox(&core, vp);
-
+		player.drawCollisionBox(&core, vp);
 		core.present();
-
 		time += dt;
 	}
 }
