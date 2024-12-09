@@ -42,6 +42,6 @@ float4 PS(PS_INPUT input) : SV_Target0
 	// Compute lighting with new normal
 	float3 diffuse = (albedo.rgb / PI) * (lightColour * max(dot(mapNormal, localLightDir), 0.0) + ambient );
 
-	return float4(albedo.rgb, 1.0);
+	return float4(diffuse.rgb, 1.0);
 
 }
