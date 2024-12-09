@@ -15,6 +15,18 @@ extern "C" {
 	__declspec(dllexport) extern DWORD NvOptimusEnablement;
 }
 
+float timeElapsed = 0.f;
+
+void getFPS(const float& dt) {
+	float fps = 1 / dt;
+	timeElapsed += dt;
+	// output FPS every one second
+	if (timeElapsed > 1.f) {
+		debugLog("FPS is : " + std::to_string(fps) );
+		timeElapsed = 0.f;
+	}
+}
+
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow) 
 {
 	Window window;
@@ -61,7 +73,6 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 	Foliage flower(&core, "Shaders/VertexShader_grass.txt", "Models/flower1.gem", flowerTextures, Vec3(-60, 0, -60), Vec3(0.08, 0.08, 0.08), 50);
 	
 	NPC npc(&core, Vec3(0, 0, -25), Vec3(2.2, 2.2, 2.2));
-	//NPC npc1(&core, Vec3(-5, 0, -10), Vec3(1.9, 1.9, 1.9));
 	Ground ground(&core, Vec3(0, 0, 0), Vec3(8.5, 1, 8.5));
 	SkyBox skyBox(&core, Vec3(0, 0, 0), Vec3(1.2, 1, 1.2));
 	Player player(&core, Vec3(0, 0, 0), Vec3(0.065, 0.065, 0.065)); //0.065, 0.065, 0.065
@@ -79,6 +90,9 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nC
 		}
 
 		float dt = timer.dt();
+
+		// output FPS once per second
+		getFPS(dt);
 
 		//------------------------------------------CAMERA----------------------------------------------
 		// collision detection: only detect tree and npc here
